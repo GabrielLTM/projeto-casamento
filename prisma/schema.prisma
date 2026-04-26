@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Gift {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  category    String
+  brand       String?
+  price       Float
+  imageUrl    String?
+  storeUrl    String?
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  reservation Reservation?
+}
+
+model Reservation {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  giftId        String   @unique @db.ObjectId
+  gift          Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
+  guestName     String
+  message       String?
+  paymentChoice String?
+  createdAt     DateTime @default(now())
+
+  giftName     String
+  giftCategory String
+  giftPrice    Float
+  giftImageUrl String?
+  giftStoreUrl String?
+}

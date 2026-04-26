@@ -1,0 +1,183 @@
+// Hero, Story intro, Timeline, Countdown components
+const { useState, useEffect, useRef, useMemo } = React;
+
+// ---------- ornaments ----------
+function Ornament({ className = "" }) {
+  return (
+    <svg className={`ornament ${className}`} viewBox="0 0 200 24" aria-hidden="true">
+      <line x1="0" y1="12" x2="80" y2="12" stroke="currentColor" strokeWidth="0.6" />
+      <circle cx="100" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="0.6" />
+      <circle cx="100" cy="12" r="0.8" fill="currentColor" />
+      <line x1="120" y1="12" x2="200" y2="12" stroke="currentColor" strokeWidth="0.6" />
+    </svg>
+  );
+}
+
+function Monogram() {
+  return (
+    <svg className="monogram" viewBox="0 0 120 60" aria-hidden="true">
+      <text x="60" y="44" textAnchor="middle" className="mono-letters">G &amp; K</text>
+    </svg>
+  );
+}
+
+// ---------- countdown ----------
+function useCountdown(target) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const diff = Math.max(0, target - now);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+  return { days, hours, minutes, seconds };
+}
+
+// ---------- Hero ----------
+function Hero() {
+  return (
+    <section className="hero" data-screen-label="01 Hero">
+      <div className="hero-image">
+        <img src="assets/casal.jpeg" alt="Gabriel e Kamilly" />
+        <div className="hero-veil" />
+      </div>
+      <div className="hero-inner">
+        <div className="hero-tag">
+          <span>11 · 04 · 2027</span>
+          <span className="dot">·</span>
+          <span>Águas Claras / RS</span>
+        </div>
+        <h1 className="hero-title">
+          <span className="amp-line">
+            <em>Gabriel</em>
+            <span className="amp">&amp;</span>
+            <em>Kamilly</em>
+          </span>
+        </h1>
+        <Ornament className="light" />
+        <p className="hero-sub">
+          Vamos nos casar. E queríamos muito que você fizesse parte
+          desse capítulo da nossa história.
+        </p>
+        <div className="hero-cta">
+          <a href="#historia" className="btn-ghost">Nossa história</a>
+          <a href="#presentes" className="btn-solid">Lista de presentes</a>
+        </div>
+      </div>
+      <div className="hero-scroll">
+        <span>role para começar</span>
+        <svg viewBox="0 0 12 24" width="12" height="24"><path d="M6 0v22M2 18l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="0.8"/></svg>
+      </div>
+    </section>
+  );
+}
+
+// ---------- Story intro ----------
+function Story() {
+  return (
+    <section className="story" id="historia" data-screen-label="02 Nossa história">
+      <div className="story-inner">
+        <span className="eyebrow">Capítulo um</span>
+        <h2 className="section-title">A nossa história</h2>
+        <Ornament />
+        <p className="story-lead">
+          Tudo começou com um olhar, um "oi" assustado, foi virando um sonho que nunca poderíamos imaginar. Hoje, depois de tudo, só podemos olhar pra trás e agradecer a Deus por tudo que Ele nos proporcionou.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// ---------- Timeline (vertical polaroids alternating) ----------
+function PolaroidPhoto({ item }) {
+  if (item.photo) {
+    return <img src={item.photo} alt={item.title} className="polaroid-img" />;
+  }
+  // Final card (the wedding) — illustrated since it hasn't happened yet
+  return (
+    <svg viewBox="0 0 200 200">
+      <rect width="200" height="200" fill="#f5e1ce" />
+      <path d="M60 170 L 60 90 Q 60 50 100 50 Q 140 50 140 90 L 140 170 Z" fill="none" stroke="#b08e6b" strokeWidth="1.5"/>
+      <line x1="100" y1="50" x2="100" y2="170" stroke="#b08e6b" strokeWidth="0.8"/>
+      <text x="100" y="110" textAnchor="middle" fontFamily="Cormorant Garamond" fontStyle="italic" fontSize="40" fill="#b08e6b">∞</text>
+      <text x="100" y="190" textAnchor="middle" fontFamily="Cormorant Garamond" fontSize="14" fill="#7a5a3e" letterSpacing="3">SIM</text>
+    </svg>
+  );
+}
+
+function TimelineItem({ item, index }) {
+  const side = index % 2 === 0 ? "left" : "right";
+  return (
+    <div className={`tl-item tl-${side}`}>
+      <div className="tl-dot" />
+      <div className="tl-card">
+        <div className="polaroid" style={{ "--rot": `${item.rotate}deg` }}>
+          <div className="polaroid-photo">
+            <PolaroidPhoto item={item} />
+          </div>
+          <div className="polaroid-caption">
+            <span>{item.date}</span>
+          </div>
+        </div>
+        <div className="tl-text">
+          <span className="tl-num">0{index + 1}</span>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Timeline() {
+  return (
+    <section className="timeline" data-screen-label="03 Linha do tempo">
+      <div className="tl-header">
+        <span className="eyebrow">Linha do tempo</span>
+        <h2 className="section-title">Quatro datas, uma vida.</h2>
+        <Ornament />
+      </div>
+      <div className="tl-track">
+        <div className="tl-line" />
+        {window.TIMELINE.map((item, i) => (
+          <TimelineItem key={i} item={item} index={i} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ---------- Countdown ----------
+function Countdown() {
+  const target = useMemo(() => new Date("2027-04-11T16:00:00-03:00").getTime(), []);
+  const { days, hours, minutes, seconds } = useCountdown(target);
+  const cells = [
+    { v: days, l: "dias" },
+    { v: hours, l: "horas" },
+    { v: minutes, l: "minutos" },
+    { v: seconds, l: "segundos" },
+  ];
+  return (
+    <section className="countdown" data-screen-label="04 Contagem">
+      <div className="cd-inner">
+        <span className="eyebrow light">faltam apenas</span>
+        <div className="cd-grid">
+          {cells.map((c, i) => (
+            <div className="cd-cell" key={i}>
+              <span className="cd-num">{String(c.v).padStart(2, "0")}</span>
+              <span className="cd-lbl">{c.l}</span>
+            </div>
+          ))}
+        </div>
+        <p className="cd-foot">
+          <em>11 de Abril de 2027</em> · Beco do Betinho, 1225 · Morada Casagrande · Águas Claras / RS
+        </p>
+      </div>
+    </section>
+  );
+}
+
+Object.assign(window, { Hero, Story, Timeline, Countdown, Ornament, Monogram });

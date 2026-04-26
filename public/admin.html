@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Gabriel & Kamilly</title>
+<style>
+  :root {
+    --bg: #f5f3f0;
+    --paper: #fbf7f2;
+    --ink: #2d2014;
+    --muted: #6b5a48;
+    --accent: #b08e6b;
+    --line: rgba(45, 32, 20, 0.15);
+    --danger: #a44a3f;
+    --ok: #5b7a4a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 { font-size: 1.6rem; margin: 0; font-weight: 500; }
+  h2 { font-size: 1.2rem; margin: 32px 0 12px; font-weight: 500; }
+  button, .btn {
+    cursor: pointer;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    border-radius: 3px;
+  }
+  button.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  button.danger { background: var(--danger); border-color: var(--danger); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  input, select, textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    background: white;
+    font-family: inherit;
+    font-size: 0.9rem;
+    border-radius: 3px;
+  }
+  input:focus, select:focus, textarea:focus { outline: 1px solid var(--accent); }
+  table { width: 100%; border-collapse: collapse; background: white; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); font-size: 0.88rem; vertical-align: top; }
+  th { background: var(--paper); font-weight: 600; }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    background: white;
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    margin-bottom: 20px;
+  }
+  .form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .form-grid label.full { grid-column: 1 / -1; }
+  .form-actions { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+  .pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .pill.reserved { background: #fce8e3; border-color: var(--danger); color: var(--danger); }
+  .pill.ok { background: #e8f0e3; border-color: var(--ok); color: var(--ok); }
+  .empty { padding: 40px; text-align: center; color: var(--muted); }
+  .auth-screen {
+    max-width: 360px;
+    margin: 80px auto;
+    padding: 32px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    z-index: 100;
+  }
+  .toast.error { background: var(--danger); }
+  .small { font-size: 0.78rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+const TOKEN_KEY = "gk-admin-token";
+const CATEGORIES = ["Cozinha", "Sala de estar", "Banheiro", "Eletrodomésticos", "Decoração"];
+
+function authHeaders(token) {
+  return { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
+}
+
+function Toast({ msg, type, onClose }) {
+  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, []);
+  return <div className={`toast ${type === "error" ? "error" : ""}`}>{msg}</div>;
+}
+
+function AuthScreen({ onAuth }) {
+  const [token, setToken] = useState("");
+  const submit = (e) => {
+    e.preventDefault();
+    if (token.trim()) onAuth(token.trim());
+  };
+  return (
+    <div className="auth-screen">
+      <h1>Admin</h1>
+      <p className="small">Informe o token administrativo (variável <code>ADMIN_TOKEN</code>).</p>
+      <form onSubmit={submit}>
+        <input type="password" value={token} onChange={(e) => setToken(e.target.value)} placeholder="Token" autoFocus />
+        <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
+          <button type="submit">Entrar</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+const EMPTY_GIFT = { name: "", category: "Cozinha", brand: "", price: "", imageUrl: "", storeUrl: "", active: true };
+
+function GiftForm({ token, editing, onSaved, onCancel, onError }) {
+  const [form, setForm] = useState(editing || EMPTY_GIFT);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setForm(editing || EMPTY_GIFT); }, [editing]);
+
+  const update = (k) => (e) => {
+    const v = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    setForm({ ...form, [k]: v });
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const isEdit = !!editing?.id;
+    const url = isEdit ? `/api/gifts/admin/${editing.id}` : "/api/gifts/admin";
+    try {
+      const res = await fetch(url, {
+        method: isEdit ? "PUT" : "POST",
+        headers: authHeaders(token),
+        body: JSON.stringify({ ...form, price: Number(form.price) }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        onError(data.error || "Erro ao salvar");
+        setSaving(false);
+        return;
+      }
+      onSaved();
+      setForm(EMPTY_GIFT);
+    } catch {
+      onError("Erro de conexão");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form className="form-grid" onSubmit={submit}>
+      <label className="full">
+        <span>Nome*</span>
+        <input value={form.name} onChange={update("name")} required maxLength={120} />
+      </label>
+      <label>
+        <span>Categoria*</span>
+        <select value={form.category} onChange={update("category")} required>
+          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>Marca</span>
+        <input value={form.brand || ""} onChange={update("brand")} maxLength={80} />
+      </label>
+      <label>
+        <span>Preço (R$)*</span>
+        <input type="number" min="0" step="0.01" value={form.price} onChange={update("price")} required />
+      </label>
+      <label>
+        <span>Ativo</span>
+        <select value={form.active ? "true" : "false"} onChange={(e) => setForm({ ...form, active: e.target.value === "true" })}>
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+      </label>
+      <label className="full">
+        <span>URL da imagem</span>
+        <input type="url" value={form.imageUrl || ""} onChange={update("imageUrl")} placeholder="https://..." />
+      </label>
+      <label className="full">
+        <span>Link da loja (opcional)</span>
+        <input type="url" value={form.storeUrl || ""} onChange={update("storeUrl")} placeholder="https://..." />
+      </label>
+      <div className="form-actions">
+        {editing && <button type="button" className="ghost" onClick={onCancel}>Cancelar</button>}
+        <button type="submit" disabled={saving}>{saving ? "Salvando…" : (editing ? "Atualizar" : "Adicionar")}</button>
+      </div>
+    </form>
+  );
+}
+
+function GiftsTable({ gifts, onEdit, onDelete }) {
+  if (!gifts.length) return <div className="empty">Nenhum presente cadastrado.</div>;
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Status</th>
+          <th>Reserva</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {gifts.map((g) => (
+          <tr key={g.id}>
+            <td>
+              <strong>{g.name}</strong>
+              {g.brand && <div className="small">{g.brand}</div>}
+            </td>
+            <td>{g.category}</td>
+            <td>R$ {Number(g.price).toLocaleString("pt-BR")}</td>
+            <td><span className={`pill ${g.active ? "ok" : ""}`}>{g.active ? "Ativo" : "Inativo"}</span></td>
+            <td>
+              {g.reservation
+                ? <span className="pill reserved">Reservado por {g.reservation.guestName}</span>
+                : <span className="pill">Disponível</span>}
+            </td>
+            <td style={{ whiteSpace: "nowrap" }}>
+              <button className="ghost" onClick={() => onEdit(g)}>Editar</button>{" "}
+              <button className="danger" onClick={() => onDelete(g)}>Excluir</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function ReservationsTable({ reservations }) {
+  if (!reservations.length) return <div className="empty">Nenhuma reserva ainda.</div>;
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Convidado</th>
+          <th>Presente</th>
+          <th>Valor</th>
+          <th>Método</th>
+          <th>Recadinho</th>
+        </tr>
+      </thead>
+      <tbody>
+        {reservations.map((r) => (
+          <tr key={r.id}>
+            <td>{new Date(r.createdAt).toLocaleString("pt-BR")}</td>
+            <td><strong>{r.guestName}</strong></td>
+            <td>{r.giftName}<div className="small">{r.giftCategory}</div></td>
+            <td>R$ {Number(r.giftPrice).toLocaleString("pt-BR")}</td>
+            <td>{r.paymentChoice || "—"}</td>
+            <td style={{ maxWidth: 280 }}>{r.message || <span className="small">—</span>}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function Admin({ token, onLogout }) {
+  const [gifts, setGifts] = useState([]);
+  const [reservations, setReservations] = useState([]);
+  const [editing, setEditing] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const showToast = (msg, type) => setToast({ msg, type });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [gRes, rRes] = await Promise.all([
+        fetch("/api/gifts/admin", { headers: authHeaders(token) }),
+        fetch("/api/reservations/admin", { headers: authHeaders(token) }),
+      ]);
+      if (gRes.status === 401 || rRes.status === 401) {
+        onLogout();
+        return;
+      }
+      setGifts(await gRes.json());
+      setReservations(await rRes.json());
+    } catch {
+      showToast("Erro ao carregar dados", "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [token, onLogout]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const onDelete = async (g) => {
+    if (!confirm(`Excluir "${g.name}"? Reservas vinculadas serão removidas.`)) return;
+    const res = await fetch(`/api/gifts/admin/${g.id}`, { method: "DELETE", headers: authHeaders(token) });
+    if (res.ok) {
+      showToast("Presente excluído", "ok");
+      load();
+    } else {
+      showToast("Erro ao excluir", "error");
+    }
+  };
+
+  return (
+    <>
+      <header>
+        <h1>Admin · Lista de Presentes</h1>
+        <button className="ghost" onClick={onLogout}>Sair</button>
+      </header>
+
+      <h2>{editing ? "Editar presente" : "Adicionar novo presente"}</h2>
+      <GiftForm
+        token={token}
+        editing={editing}
+        onSaved={() => { setEditing(null); load(); showToast("Salvo", "ok"); }}
+        onCancel={() => setEditing(null)}
+        onError={(m) => showToast(m, "error")}
+      />
+
+      <h2>Presentes ({gifts.length})</h2>
+      {loading ? <div className="empty">Carregando…</div> : (
+        <GiftsTable gifts={gifts} onEdit={setEditing} onDelete={onDelete} />
+      )}
+
+      <h2>Reservas ({reservations.length})</h2>
+      {!loading && <ReservationsTable reservations={reservations} />}
+
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+    </>
+  );
+}
+
+function App() {
+  const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) || "");
+  const onAuth = (t) => { sessionStorage.setItem(TOKEN_KEY, t); setToken(t); };
+  const onLogout = () => { sessionStorage.removeItem(TOKEN_KEY); setToken(""); };
+  return token ? <Admin token={token} onLogout={onLogout} /> : <AuthScreen onAuth={onAuth} />;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
