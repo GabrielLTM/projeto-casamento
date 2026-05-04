@@ -22,6 +22,9 @@
 
 * { box-sizing: border-box; }
 
+/* JS controla scroll suave — CSS scroll-behavior:smooth conflita com RAF e causa travamento */
+html { scroll-behavior: auto; }
+
 html, body {
   margin: 0;
   padding: 0;

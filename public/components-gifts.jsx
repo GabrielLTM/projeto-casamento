@@ -2,6 +2,7 @@
 const { useState: useState2, useEffect: useEffect2, useMemo: useMemo2 } = React;
 
 const PIX_KEY = "gabriellessa251@gmail.com";
+const PIX_BRCODE = "00020126470014BR.GOV.BCB.PIX0125gabriellessa251@gmail.com5204000053039865802BR5925Gabriel Lessa Tramasol Ma6009SAO PAULO62140510l8VVMgFvBE63044555";
 const CATEGORIES = ["Todos", "Cozinha", "Sala de estar", "Banheiro", "Eletrodomésticos", "Decoração"];
 
 function GiftPlaceholder({ cat }) {
@@ -108,7 +109,7 @@ function GiftCard({ gift, onReserve }) {
 }
 
 function PixPanel({ gift }) {
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&color=2D2014&bgcolor=F5F3F0&data=${encodeURIComponent(PIX_KEY)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&color=2D2014&bgcolor=F5F3F0&data=${encodeURIComponent(PIX_BRCODE)}`;
   const [copied, setCopied] = useState2(false);
   const copyKey = () => {
     navigator.clipboard?.writeText(PIX_KEY);
@@ -253,7 +254,7 @@ function ReservationModal({ gift, onClose, onSuccess }) {
             <div className="modal-actions" style={{ marginTop: "1.2rem", flexWrap: "wrap", gap: "0.6rem" }}>
               {gift.storeUrl && (
                 <a className="btn-ghost dark" href={gift.storeUrl} target="_blank" rel="noreferrer">
-                  Ir para a loja
+                  Comprar direto na loja
                 </a>
               )}
               <button className="btn-solid" onClick={onClose}>Concluído</button>
@@ -363,7 +364,7 @@ function Gifts() {
 
 // ---------- PIX section ----------
 function Pix() {
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&color=2D2014&bgcolor=F5F3F0&data=${encodeURIComponent(PIX_KEY)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&color=2D2014&bgcolor=F5F3F0&data=${encodeURIComponent(PIX_BRCODE)}`;
   const [copied, setCopied] = useState2(false);
 
   const copyKey = () => {
