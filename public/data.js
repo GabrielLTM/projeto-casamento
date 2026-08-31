@@ -31,7 +31,7 @@ window.TIMELINE = [
   {
     date: "11 de Abril de 2027",
     title: "O grande dia",
-    text: "E enfim, o início do nosso para sempre. Vocês são parte dessa história — obrigado, mas podemos esperar para viver esse sonho.",
+    text: "E enfim, o início do nosso para sempre. Vocês são parte dessa história — obrigado, mal podemos esperar para viver esse sonho.",
     rotate: 3,
     photo: "assets/grande_dia.jpeg",
   },

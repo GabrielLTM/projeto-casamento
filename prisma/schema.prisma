@@ -7,6 +7,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Configuração global do site (singleton).
+/// Guarda qual dos três eventos está ativo: "noivado" | "cha" | "casamento".
+/// O campo `key` existe só para dar um alvo único ao upsert — sempre vale "site".
+model SiteConfig {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique @default("site")
+  activeEvent String   @default("casamento")
+  updatedAt   DateTime @updatedAt
+}
+
+/// Data e local de cada evento — editável pelo casal no /admin.
+/// Um documento por evento (key = "noivado" | "cha" | "casamento").
+/// `dateIso` é String de propósito: guarda o horário de parede COM offset
+/// ("2027-04-11T16:00:00-03:00"). Como DateTime o Mongo normalizaria para
+/// UTC e a data exibida poderia escorregar um dia dependendo do fuso.
+model EventConfig {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  key        String   @unique
+  dateIso    String
+  placeShort String
+  placeFull  String
+  rsvpUntil  String?
+  updatedAt  DateTime @updatedAt
+}
+
+/// Confirmação de presença feita pelo convidado direto no site.
+/// `event` guarda a qual evento a confirmação pertence ("noivado" | "cha" |
+/// "casamento"), para que as listas dos três não se misturem.
+model Rsvp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  event     String
+  guestName String
+  attending Boolean
+  guests    Int      @default(1)
+  message   String?
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+}
+
 model Gift {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String

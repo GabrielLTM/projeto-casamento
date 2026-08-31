@@ -6,8 +6,9 @@
 <title>Gabriel & Kamilly · 11 de Abril de 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=18">
+<link rel="stylesheet" href="styles-events.css?v=18">
 </head>
 <body>
 <div id="root"></div>
@@ -16,20 +17,70 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<script src="data.js?v=2"></script>
-<script type="text/babel" src="components-story.jsx?v=2"></script>
-<script type="text/babel" src="components-gifts.jsx?v=2"></script>
+<script src="data.js?v=18"></script>
+<script src="events.js?v=18"></script>
+<script type="text/babel" src="components-story.jsx?v=18"></script>
+<script type="text/babel" src="components-gifts.jsx?v=18"></script>
+<script type="text/babel" src="components-invite.jsx?v=18"></script>
+<script type="text/babel" src="components-rsvp.jsx?v=18"></script>
 <script type="text/babel">
+const { useState: useStateApp, useEffect: useEffectApp } = React;
+
 function App() {
+  // null = ainda resolvendo /api/config. Só renderiza depois de decidir,
+  // para nunca mostrar a variante errada e trocar na cara do convidado.
+  const [view, setView] = useStateApp(null);
+
+  useEffectApp(() => {
+    let alive = true;
+
+    // ?evento=noivado|cha|casamento — prévia. Serve para o casal conferir um
+    // evento antes de colocá-lo no ar; não altera o que o convidado vê.
+    const preview = new URLSearchParams(location.search).get("evento");
+
+    const apply = (activeEvent, events) => {
+      if (!alive) return;
+      const wanted = window.EVENTS[preview] ? preview : activeEvent;
+      const key = window.EVENTS[wanted] ? wanted : window.DEFAULT_EVENT;
+      const data = (events && events[key]) || window.EVENT_DEFAULTS[key];
+      setView(window.buildEventView(key, data));
+    };
+
+    fetch("/api/config", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("config indisponível"))))
+      .then((cfg) => apply(cfg.activeEvent, cfg.events))
+      // rede fora do ar: cai nos defaults do próprio events.js
+      .catch(() => apply(window.DEFAULT_EVENT, window.EVENT_DEFAULTS));
+
+    return () => { alive = false; };
+  }, []);
+
+  useEffectApp(() => {
+    if (!view) return;
+    document.title =
+      typeof view.documentTitle === "function" ? view.documentTitle(view) : view.documentTitle;
+  }, [view]);
+
+  if (!view) {
+    return (
+      <div className="boot">
+        <span className="boot-mark" aria-hidden="true">G &amp; K</span>
+      </div>
+    );
+  }
+
+  const s = view.sections;
   return (
     <main>
-      <Hero />
-      <Story />
-      <Timeline />
-      <Countdown />
-      <Gifts />
-      <Pix />
-      <Thanks />
+      <Hero ev={view} />
+      {s.story && <Story ev={view} />}
+      {s.timeline && <Timeline ev={view} />}
+      {s.countdown && <Countdown ev={view} />}
+      {s.gifts && <Gifts ev={view} />}
+      {s.invite && <Invite ev={view} />}
+      {s.rsvp && <Rsvp ev={view} />}
+      {s.pix && <Pix ev={view} />}
+      {s.thanks && <Thanks ev={view} />}
     </main>
   );
 }

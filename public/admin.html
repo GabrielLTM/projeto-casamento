@@ -4,27 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin · Gabriel & Kamilly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f5f3f0;
-    --paper: #fbf7f2;
-    --ink: #2d2014;
-    --muted: #6b5a48;
-    --accent: #b08e6b;
-    --line: rgba(45, 32, 20, 0.15);
-    --danger: #a44a3f;
-    --ok: #5b7a4a;
+    --paper: #F8F7F4;
+    --white: #FFFFFF;
+    --soft: #EFEDE6;
+    --ink: #231F20;
+    --ink-soft: #3D3B3A;
+    --muted: #85817B;
+    --olive: #61663C;
+    --bronze: #B89068;
+    --line: rgba(35, 31, 32, 0.15);
+    --line-soft: rgba(35, 31, 32, 0.08);
+    --danger: #A44A3F;
+
+    --display: "Cinzel", Georgia, serif;
+    --body: "Crimson Pro", Georgia, serif;
+    --numeral: "EB Garamond", Georgia, serif;
   }
   * { box-sizing: border-box; }
-  body {
+  html, body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
+    padding: 0;
+    background: var(--paper);
     color: var(--ink);
+    font-family: var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
     padding: 24px;
     max-width: 1200px;
     margin: 0 auto;
   }
+  a { color: var(--olive); }
+  a:hover { color: var(--ink); }
+  input, select, textarea, button { font-family: inherit; }
+
   header {
     display: flex;
     justify-content: space-between;
@@ -33,44 +51,78 @@
     padding-bottom: 16px;
     margin-bottom: 24px;
   }
-  h1 { font-size: 1.6rem; margin: 0; font-weight: 500; }
-  h2 { font-size: 1.2rem; margin: 32px 0 12px; font-weight: 500; }
+  h1 { font-family: var(--display); font-size: 1.5rem; margin: 0; font-weight: 500; }
+  h2 { font-family: var(--display); font-size: 1.15rem; margin: 32px 0 12px; font-weight: 500; }
+
   button, .btn {
     cursor: pointer;
     border: 1px solid var(--ink);
     background: var(--ink);
     color: var(--paper);
     padding: 8px 16px;
-    font-size: 0.9rem;
-    font-family: inherit;
-    border-radius: 3px;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-radius: 0;
+    transition: all 200ms;
   }
-  button.ghost {
-    background: transparent;
-    color: var(--ink);
-  }
-  button.danger { background: var(--danger); border-color: var(--danger); }
+  button:hover:not(:disabled) { background: var(--olive); border-color: var(--olive); }
+  button.ghost { background: transparent; color: var(--ink); }
+  button.ghost:hover:not(:disabled) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  button.danger { background: var(--danger); border-color: var(--danger); color: var(--paper); transition: opacity 200ms; }
+  button.danger:hover:not(:disabled) { background: var(--danger); border-color: var(--danger); opacity: 0.85; }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
+  td button { padding: 5px 12px; font-size: 0.72rem; letter-spacing: 0.14em; }
+
   input, select, textarea {
     width: 100%;
     padding: 8px 12px;
     border: 1px solid var(--line);
-    background: white;
-    font-family: inherit;
-    font-size: 0.9rem;
-    border-radius: 3px;
+    background: var(--white);
+    font-size: 0.95rem;
+    color: var(--ink);
+    border-radius: 0;
+    outline: none;
+    transition: border-color 200ms;
   }
-  input:focus, select:focus, textarea:focus { outline: 1px solid var(--accent); }
-  table { width: 100%; border-collapse: collapse; background: white; }
-  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); font-size: 0.88rem; vertical-align: top; }
-  th { background: var(--paper); font-weight: 600; }
+  input:focus, select:focus, textarea:focus { border-color: var(--olive); }
+  input[type="number"] { font-family: var(--numeral); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border: 1px solid var(--line-soft);
+  }
+  th {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: var(--soft);
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 0.92rem;
+    vertical-align: top;
+  }
+  td.num { font-family: var(--numeral); font-size: 0.95rem; }
+  td.date { font-family: var(--numeral); font-size: 0.88rem; }
+  td.note { max-width: 280px; font-size: 0.88rem; font-style: italic; color: var(--ink-soft); }
+
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    background: white;
+    background: var(--white);
     padding: 20px;
-    border-radius: 6px;
+    border-radius: 0;
     border: 1px solid var(--line);
     margin-bottom: 20px;
   }
@@ -81,27 +133,91 @@
     font-size: 0.8rem;
     color: var(--muted);
   }
+  .form-grid label > span {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+  }
   .form-grid label.full { grid-column: 1 / -1; }
   .form-actions { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+
   .pill {
     display: inline-block;
-    font-size: 0.7rem;
-    padding: 2px 8px;
-    border-radius: 12px;
-    background: var(--paper);
+    font-size: 0.72rem;
+    padding: 2px 10px;
+    letter-spacing: 0.06em;
+    border-radius: 0;
+    background: var(--soft);
     border: 1px solid var(--line);
+    color: var(--muted);
   }
-  .pill.reserved { background: #fce8e3; border-color: var(--danger); color: var(--danger); }
-  .pill.ok { background: #e8f0e3; border-color: var(--ok); color: var(--ok); }
-  .empty { padding: 40px; text-align: center; color: var(--muted); }
+  .pill.ok { background: rgba(97, 102, 60, 0.1); border-color: var(--olive); color: var(--olive); }
+  .pill.reserved { background: rgba(184, 144, 104, 0.14); border-color: var(--bronze); color: #8A6A48; }
+
+  /* ---- blocos de configuração de evento ---- */
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .panel h2 { margin: 0 0 4px; }
+  .panel > .small { display: block; margin: 0 0 16px; line-height: 1.5; }
+
+  .event-switch { display: flex; flex-wrap: wrap; gap: 12px; }
+  .event-opt { flex: 1 1 200px; min-width: 180px; display: flex; flex-direction: column; gap: 7px; }
+  .event-opt > button { width: 100%; }
+  .event-opt .small { margin: 0; line-height: 1.45; }
+
+  /* ativo: fundo ink + texto paper · inativos: ghost que inverte no hover */
+  button.evt { background: transparent; color: var(--ink); border-color: var(--ink); }
+  button.evt:hover:not(:disabled) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  button.evt.is-active,
+  button.evt.is-active:hover:not(:disabled) {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  /* seletor de QUAL evento está sendo editado (≠ evento ativo no site) */
+  .tab-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; align-items: center; }
+  .tab-row > .small { margin-right: 4px; }
+  button.tab {
+    background: transparent;
+    color: var(--muted);
+    border-color: var(--line);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    padding: 7px 14px;
+  }
+  button.tab:hover:not(:disabled) { background: var(--soft); border-color: var(--line); color: var(--ink); }
+  button.tab.is-active { background: var(--soft); border-color: var(--ink); color: var(--ink); }
+
+  .notice {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--bronze);
+    background: var(--soft);
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+  }
+  .notice.warn { border-left-color: var(--danger); background: rgba(164, 74, 63, 0.06); }
+  .panel .form-grid { margin-bottom: 0; padding: 0; border: none; background: transparent; }
+  .pill.warn { background: rgba(164, 74, 63, 0.08); border-color: var(--danger); color: var(--danger); }
+
+  .empty { padding: 40px; text-align: center; color: var(--muted); font-style: italic; }
   .auth-screen {
     max-width: 360px;
     margin: 80px auto;
     padding: 32px;
-    background: white;
-    border-radius: 8px;
+    background: var(--white);
+    border-radius: 0;
     border: 1px solid var(--line);
   }
+  .auth-screen h1 { margin: 0 0 8px; }
+  .auth-screen input { font-size: 0.9rem; }
   .toast {
     position: fixed;
     bottom: 20px;
@@ -109,12 +225,20 @@
     background: var(--ink);
     color: var(--paper);
     padding: 12px 20px;
-    border-radius: 4px;
+    border-radius: 0;
     font-size: 0.9rem;
+    letter-spacing: 0.04em;
     z-index: 100;
   }
   .toast.error { background: var(--danger); }
   .small { font-size: 0.78rem; color: var(--muted); }
+  .small.brand { font-style: italic; }
+  .auth-screen p.small { margin: 0 0 16px; font-size: 0.85rem; }
+  code { font-family: monospace; }
+
+  @media (max-width: 640px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -124,6 +248,9 @@
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+
+<!-- rótulos, ordem dos eventos e os helpers de data são os mesmos do site -->
+<script src="events.js?v=18"></script>
 
 <script type="text/babel">
 const { useState, useEffect, useCallback } = React;
@@ -156,6 +283,186 @@ function AuthScreen({ onAuth }) {
         </div>
       </form>
     </div>
+  );
+}
+
+/* ============================================================
+   Evento ativo + cadastro de data/local
+   ============================================================ */
+
+// Botões do evento ativo. "Ativo" = o que os convidados veem agora.
+function EventSwitch({ activeEvent, onPick, busy }) {
+  return (
+    <div className="event-switch">
+      {window.EVENT_ORDER.map((key) => {
+        const cfg = window.EVENTS[key];
+        const isActive = key === activeEvent;
+        return (
+          <div className="event-opt" key={key}>
+            <button
+              type="button"
+              className={`evt ${isActive ? "is-active" : ""}`}
+              onClick={() => onPick(key)}
+              disabled={busy}
+            >
+              {cfg.adminLabel}
+            </button>
+            <span className="small">{cfg.adminHint}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function eventToForm(data) {
+  const d = data && data.dateIso ? window.formatEventDate(data.dateIso) : null;
+  const r = data && data.rsvpUntil ? window.formatEventDate(data.rsvpUntil) : null;
+  return {
+    dateTime: d ? d.inputDateTime : "",
+    placeShort: (data && data.placeShort) || "",
+    placeFull: (data && data.placeFull) || "",
+    rsvpUntil: r ? r.inputDate : "",
+  };
+}
+
+// Cadastro de data/local do evento SELECIONADO (que pode não ser o ativo).
+function EventDataForm({ token, eventKey, data, onSaved, onError, onUnauthorized }) {
+  const [form, setForm] = useState(() => eventToForm(data));
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setForm(eventToForm(data)); }, [eventKey, data]);
+
+  const update = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.dateTime) { onError("Informe a data e a hora do evento."); return; }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/config", {
+        method: "PUT",
+        headers: authHeaders(token),
+        body: JSON.stringify({
+          event: {
+            key: eventKey,
+            // datetime-local não carrega fuso: carimbamos o offset do site (-03:00)
+            dateIso: window.toSiteIso(form.dateTime),
+            placeShort: form.placeShort,
+            placeFull: form.placeFull,
+            rsvpUntil: form.rsvpUntil || null,
+          },
+        }),
+      });
+      if (res.status === 401) { onUnauthorized(); return; }
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) { onError(body.error || "Erro ao salvar"); return; }
+      onSaved(body, eventKey);
+    } catch {
+      onError("Erro de conexão");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form className="form-grid" onSubmit={submit}>
+      <label>
+        <span>Data e hora*</span>
+        <input type="datetime-local" value={form.dateTime} onChange={update("dateTime")} required />
+      </label>
+      <label>
+        <span>Confirmar presença até</span>
+        <input type="date" value={form.rsvpUntil} onChange={update("rsvpUntil")} />
+      </label>
+      <label className="full">
+        <span>Local curto (tag do hero)</span>
+        <input
+          value={form.placeShort}
+          onChange={update("placeShort")}
+          maxLength={120}
+          placeholder="Águas Claras / RS"
+          required
+        />
+      </label>
+      <label className="full">
+        <span>Endereço completo (rodapé)</span>
+        <input
+          value={form.placeFull}
+          onChange={update("placeFull")}
+          maxLength={240}
+          placeholder="Beco do Betinho, 1225 · Morada Casagrande · Águas Claras / RS"
+          required
+        />
+      </label>
+      <div className="form-actions">
+        <button type="submit" disabled={saving}>{saving ? "Salvando…" : "Salvar data e local"}</button>
+      </div>
+    </form>
+  );
+}
+
+function EventConfigPanel({ token, config, editingKey, onEdit, onPick, onSaved, onError, onUnauthorized, busy }) {
+  if (!config) return <div className="panel"><div className="empty">Carregando configuração…</div></div>;
+
+  const activeEvent = config.activeEvent;
+  const data = config.events[editingKey];
+  const cfg = window.EVENTS[editingKey];
+  const isEditingActive = editingKey === activeEvent;
+
+  return (
+    <>
+      <div className="panel">
+        <h2>Evento ativo</h2>
+        <span className="small">
+          É o que os convidados veem no site agora. A troca vale na hora — quem recarregar a
+          página já cai na versão nova.
+        </span>
+        <EventSwitch activeEvent={activeEvent} onPick={onPick} busy={busy} />
+      </div>
+
+      <div className="panel">
+        <h2>Data e local</h2>
+        <span className="small">
+          Escolha qual evento quer editar. <strong>Editar aqui não troca o evento no ar</strong> —
+          para isso use os botões acima.
+        </span>
+
+        <div className="tab-row">
+          <span className="small">Editando:</span>
+          {window.EVENT_ORDER.map((key) => (
+            <button
+              key={key}
+              type="button"
+              className={`tab ${key === editingKey ? "is-active" : ""}`}
+              onClick={() => onEdit(key)}
+            >
+              {window.EVENTS[key].adminLabel}
+            </button>
+          ))}
+          {isEditingActive
+            ? <span className="pill ok">no ar</span>
+            : <span className="pill">no ar: {window.EVENTS[activeEvent].adminLabel}</span>}
+          {data.datePending && <span className="pill warn">data a confirmar</span>}
+        </div>
+
+        {data.datePending && (
+          <p className="notice warn">
+            A data de <strong>{cfg.adminLabel}</strong> ainda não foi confirmada — o site está
+            usando um valor provisório. Preencha abaixo e salve.
+          </p>
+        )}
+
+        <EventDataForm
+          token={token}
+          eventKey={editingKey}
+          data={data}
+          onSaved={onSaved}
+          onError={onError}
+          onUnauthorized={onUnauthorized}
+        />
+      </div>
+    </>
   );
 }
 
@@ -260,24 +567,74 @@ function GiftsTable({ gifts, onEdit, onDelete }) {
           <tr key={g.id}>
             <td>
               <strong>{g.name}</strong>
-              {g.brand && <div className="small">{g.brand}</div>}
+              {g.brand && <div className="small brand">{g.brand}</div>}
             </td>
             <td>{g.category}</td>
-            <td>R$ {Number(g.price).toLocaleString("pt-BR")}</td>
+            <td className="num">R$ {Number(g.price).toLocaleString("pt-BR")}</td>
             <td><span className={`pill ${g.active ? "ok" : ""}`}>{g.active ? "Ativo" : "Inativo"}</span></td>
             <td>
               {g.reservation
                 ? <span className="pill reserved">Reservado por {g.reservation.guestName}</span>
                 : <span className="pill">Disponível</span>}
             </td>
-            <td style={{ whiteSpace: "nowrap" }}>
-              <button className="ghost" onClick={() => onEdit(g)}>Editar</button>{" "}
-              <button className="danger" onClick={() => onDelete(g)}>Excluir</button>
+            <td style={{ whiteSpace: "nowrap", textAlign: "right" }}>
+              <div style={{ display: "inline-flex", gap: 6 }}>
+                <button className="ghost" onClick={() => onEdit(g)}>Editar</button>
+                <button className="danger" onClick={() => onDelete(g)}>Excluir</button>
+              </div>
             </td>
           </tr>
         ))}
       </tbody>
     </table>
+  );
+}
+
+function RsvpTable({ rsvps, onDelete }) {
+  if (!rsvps.length) return <div className="empty">Nenhuma confirmação ainda.</div>;
+  const going = rsvps.filter((r) => r.attending);
+  const heads = rsvps.reduce((n, r) => n + (r.attending ? (r.guests || 1) : 0), 0);
+  return (
+    <>
+      <p className="small" style={{ margin: "0 0 10px" }}>
+        <strong>{going.length}</strong> {going.length === 1 ? "confirmou" : "confirmaram"}, somando{" "}
+        <strong>{heads}</strong> {heads === 1 ? "pessoa" : "pessoas"} ·{" "}
+        <strong>{rsvps.length - going.length}</strong>{" "}
+        {rsvps.length - going.length === 1 ? "não vai" : "não vão"}.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Convidado</th>
+            <th>Evento</th>
+            <th>Vai?</th>
+            <th>Pessoas</th>
+            <th>Recadinho</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {rsvps.map((r) => (
+            <tr key={r.id}>
+              <td className="date">{new Date(r.createdAt).toLocaleString("pt-BR")}</td>
+              <td><strong>{r.guestName}</strong></td>
+              <td>{(window.EVENTS[r.event] && window.EVENTS[r.event].adminLabel) || r.event}</td>
+              <td>
+                <span className={`pill ${r.attending ? "ok" : ""}`}>
+                  {r.attending ? "Vai" : "Não vai"}
+                </span>
+              </td>
+              <td className="num">{r.attending ? (r.guests || 1) : "—"}</td>
+              <td className="note">{r.message || <span className="small">—</span>}</td>
+              <td style={{ whiteSpace: "nowrap", textAlign: "right" }}>
+                <button className="danger" onClick={() => onDelete(r)}>Excluir</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 
@@ -298,12 +655,12 @@ function ReservationsTable({ reservations }) {
       <tbody>
         {reservations.map((r) => (
           <tr key={r.id}>
-            <td>{new Date(r.createdAt).toLocaleString("pt-BR")}</td>
+            <td className="date">{new Date(r.createdAt).toLocaleString("pt-BR")}</td>
             <td><strong>{r.guestName}</strong></td>
             <td>{r.giftName}<div className="small">{r.giftCategory}</div></td>
-            <td>R$ {Number(r.giftPrice).toLocaleString("pt-BR")}</td>
+            <td className="num">R$ {Number(r.giftPrice).toLocaleString("pt-BR")}</td>
             <td>{r.paymentChoice || "—"}</td>
-            <td style={{ maxWidth: 280 }}>{r.message || <span className="small">—</span>}</td>
+            <td className="note">{r.message || <span className="small">—</span>}</td>
           </tr>
         ))}
       </tbody>
@@ -314,18 +671,30 @@ function ReservationsTable({ reservations }) {
 function Admin({ token, onLogout }) {
   const [gifts, setGifts] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const [rsvps, setRsvps] = useState([]);
   const [editing, setEditing] = useState(null);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [config, setConfig] = useState(null);       // { activeEvent, events }
+  const [editingKey, setEditingKey] = useState(null); // evento em edição (≠ ativo)
+  const [switching, setSwitching] = useState(false);
 
   const showToast = (msg, type) => setToast({ msg, type });
+
+  const applyConfig = useCallback((cfg) => {
+    setConfig(cfg);
+    // na primeira carga, abre o cadastro já no evento que está no ar
+    setEditingKey((current) => current || cfg.activeEvent);
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [gRes, rRes] = await Promise.all([
+      const [gRes, rRes, cRes, pRes] = await Promise.all([
         fetch("/api/gifts/admin", { headers: authHeaders(token) }),
         fetch("/api/reservations/admin", { headers: authHeaders(token) }),
+        fetch("/api/config", { cache: "no-store" }),
+        fetch("/api/rsvp/admin", { headers: authHeaders(token) }),
       ]);
       if (gRes.status === 401 || rRes.status === 401) {
         onLogout();
@@ -333,14 +702,58 @@ function Admin({ token, onLogout }) {
       }
       setGifts(await gRes.json());
       setReservations(await rRes.json());
+      if (pRes.ok) setRsvps(await pRes.json());
+      if (cRes.ok) applyConfig(await cRes.json());
     } catch {
       showToast("Erro ao carregar dados", "error");
     } finally {
       setLoading(false);
     }
-  }, [token, onLogout]);
+  }, [token, onLogout, applyConfig]);
 
   useEffect(() => { load(); }, [load]);
+
+  const pickActiveEvent = async (key) => {
+    if (!config || key === config.activeEvent) return;
+    setSwitching(true);
+    try {
+      const res = await fetch("/api/config", {
+        method: "PUT",
+        headers: authHeaders(token),
+        body: JSON.stringify({ activeEvent: key }),
+      });
+      if (res.status === 401) { onLogout(); return; }
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) { showToast(body.error || "Erro ao trocar o evento", "error"); return; }
+      applyConfig(body);
+      showToast(`Evento alterado para ${window.EVENTS[key].adminLabel}`, "ok");
+    } catch {
+      showToast("Erro de conexão", "error");
+    } finally {
+      setSwitching(false);
+    }
+  };
+
+  const onEventSaved = (body, key) => {
+    applyConfig(body);
+    showToast(`Data e local de ${window.EVENTS[key].adminLabel} salvos`, "ok");
+  };
+
+  // O evento no ar mostra a lista de presentes?
+  const activeShowsGifts = !config || !window.EVENTS[config.activeEvent]
+    ? true
+    : window.EVENTS[config.activeEvent].sections.gifts;
+
+  const onDeleteRsvp = async (r) => {
+    if (!confirm(`Excluir a confirmação de "${r.guestName}"?`)) return;
+    const res = await fetch(`/api/rsvp/admin/${r.id}`, { method: "DELETE", headers: authHeaders(token) });
+    if (res.ok) {
+      showToast("Confirmação excluída", "ok");
+      load();
+    } else {
+      showToast("Erro ao excluir", "error");
+    }
+  };
 
   const onDelete = async (g) => {
     if (!confirm(`Excluir "${g.name}"? Reservas vinculadas serão removidas.`)) return;
@@ -360,6 +773,18 @@ function Admin({ token, onLogout }) {
         <button className="ghost" onClick={onLogout}>Sair</button>
       </header>
 
+      <EventConfigPanel
+        token={token}
+        config={config}
+        editingKey={editingKey || (config && config.activeEvent)}
+        onEdit={setEditingKey}
+        onPick={pickActiveEvent}
+        onSaved={onEventSaved}
+        onError={(m) => showToast(m, "error")}
+        onUnauthorized={onLogout}
+        busy={switching}
+      />
+
       <h2>{editing ? "Editar presente" : "Adicionar novo presente"}</h2>
       <GiftForm
         token={token}
@@ -370,8 +795,21 @@ function Admin({ token, onLogout }) {
       />
 
       <h2>Presentes ({gifts.length})</h2>
+      {!activeShowsGifts && config && (
+        <p className="notice warn">
+          O evento no ar é <strong>{window.EVENTS[config.activeEvent].adminLabel}</strong>, que
+          não mostra a lista de presentes para os convidados. Os itens abaixo continuam salvos e
+          podem ser editados normalmente — eles voltam a aparecer no site assim que você ativar o
+          Chá de Panela ou a Lista de Casamento.
+        </p>
+      )}
       {loading ? <div className="empty">Carregando…</div> : (
         <GiftsTable gifts={gifts} onEdit={setEditing} onDelete={onDelete} />
+      )}
+
+      <h2>Confirmações de presença ({rsvps.length})</h2>
+      {loading ? <div className="empty">Carregando…</div> : (
+        <RsvpTable rsvps={rsvps} onDelete={onDeleteRsvp} />
       )}
 
       <h2>Reservas ({reservations.length})</h2>

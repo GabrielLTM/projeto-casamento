@@ -6,6 +6,8 @@ const helmet = require("helmet");
 
 const giftsRouter = require("./routes/gifts");
 const reservationsRouter = require("./routes/reservations");
+const rsvpRouter = require("./routes/rsvp");
+const configRouter = require("./routes/config");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -20,8 +22,10 @@ app.use(
 app.use(express.json({ limit: "100kb" }));
 
 // API
+app.use("/api/config", configRouter);
 app.use("/api/gifts", giftsRouter);
 app.use("/api/reservations", reservationsRouter);
+app.use("/api/rsvp", rsvpRouter);
 
 // Static
 app.use(express.static(PUBLIC_DIR, { extensions: ["html"] }));

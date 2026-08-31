@@ -1,5 +1,14 @@
 // Hero, Story intro, Timeline, Countdown components
+// A prop `ev` é a "view" do evento ativo: cópia estática de window.EVENTS
+// + data/local vindos de /api/config, já derivados (window.buildEventView).
 const { useState, useEffect, useRef, useMemo } = React;
+
+// Fallback defensivo: se por algum motivo o App não passar a view montada,
+// monta a do evento padrão em vez de quebrar a página.
+function ev0(ev) {
+  if (ev && ev.date) return ev;
+  return window.buildEventView(window.DEFAULT_EVENT, null);
+}
 
 // ---------- ornaments ----------
 function Ornament({ className = "" }) {
@@ -14,11 +23,7 @@ function Ornament({ className = "" }) {
 }
 
 function Monogram() {
-  return (
-    <svg className="monogram" viewBox="0 0 120 60" aria-hidden="true">
-      <text x="60" y="44" textAnchor="middle" className="mono-letters">G &amp; K</text>
-    </svg>
-  );
+  return <span className="monogram" aria-hidden="true">G &amp; K</span>;
 }
 
 // ---------- countdown ----------
@@ -37,34 +42,36 @@ function useCountdown(target) {
 }
 
 // ---------- Hero ----------
-function Hero() {
+function Hero({ ev }) {
+  const E = ev0(ev);
+  const h = E.hero;
   return (
     <section className="hero" data-screen-label="01 Hero">
       <div className="hero-image">
-        <img src="assets/casal.jpeg" alt="Gabriel e Kamilly" />
+        <img src="assets/hero.jpg" alt="Gabriel e Kamilly" />
         <div className="hero-veil" />
       </div>
       <div className="hero-inner">
         <div className="hero-tag">
-          <span>11 · 04 · 2027</span>
+          <span className="hero-date">{E.date.tag}</span>
           <span className="dot">·</span>
-          <span>Águas Claras / RS</span>
+          <span>{E.place.short}</span>
         </div>
         <h1 className="hero-title">
-          <span className="amp-line">
-            <em>Gabriel</em>
-            <span className="amp">&amp;</span>
-            <em>Kamilly</em>
+          <span className="script-names">
+            <span>Gabriel</span>
+            <span className="conj">e</span>
+            <span>Kamilly</span>
           </span>
         </h1>
         <Ornament className="light" />
         <p className="hero-sub">
-          Vamos nos casar. E queríamos muito que você fizesse parte
-          desse capítulo da nossa história.
+          {h.sub}
+          {h.subCite && <cite className="hero-cite">{h.subCite}</cite>}
         </p>
         <div className="hero-cta">
-          <a href="#historia" className="btn-ghost">Nossa história</a>
-          <a href="#presentes" className="btn-solid">Lista de presentes</a>
+          <a href={h.ghostCta.href} className="btn-ghost">{h.ghostCta.label}</a>
+          <a href={h.solidCta.href} className="btn-solid">{h.solidCta.label}</a>
         </div>
       </div>
       <div className="hero-scroll">
@@ -76,16 +83,15 @@ function Hero() {
 }
 
 // ---------- Story intro ----------
-function Story() {
+function Story({ ev }) {
+  const s = ev0(ev).story;
   return (
     <section className="story" id="historia" data-screen-label="02 Nossa história">
       <div className="story-inner">
-        <span className="eyebrow">Capítulo um</span>
-        <h2 className="section-title">A nossa história</h2>
+        <span className="eyebrow">{s.eyebrow}</span>
+        <h2 className="section-title">{s.title}</h2>
         <Ornament />
-        <p className="story-lead">
-          Tudo começou com um olhar, um "oi" assustado, foi virando um sonho que nunca poderíamos imaginar. Hoje, depois de tudo, só podemos olhar pra trás e agradecer a Deus por tudo que Ele nos proporcionou.
-        </p>
+        <p className="story-lead">{s.lead}</p>
       </div>
     </section>
   );
@@ -96,14 +102,14 @@ function PolaroidPhoto({ item }) {
   if (item.photo) {
     return <img src={item.photo} alt={item.title} className="polaroid-img" />;
   }
-  // Final card (the wedding) — illustrated since it hasn't happened yet
+  // Fallback ilustrado, caso alguma foto ainda não exista
   return (
     <svg viewBox="0 0 200 200">
-      <rect width="200" height="200" fill="#f5e1ce" />
-      <path d="M60 170 L 60 90 Q 60 50 100 50 Q 140 50 140 90 L 140 170 Z" fill="none" stroke="#b08e6b" strokeWidth="1.5"/>
-      <line x1="100" y1="50" x2="100" y2="170" stroke="#b08e6b" strokeWidth="0.8"/>
-      <text x="100" y="110" textAnchor="middle" fontFamily="Cormorant Garamond" fontStyle="italic" fontSize="40" fill="#b08e6b">∞</text>
-      <text x="100" y="190" textAnchor="middle" fontFamily="Cormorant Garamond" fontSize="14" fill="#7a5a3e" letterSpacing="3">SIM</text>
+      <rect width="200" height="200" fill="#EFEDE6" />
+      <path d="M60 170 L 60 90 Q 60 50 100 50 Q 140 50 140 90 L 140 170 Z" fill="none" stroke="#B89068" strokeWidth="1.5"/>
+      <line x1="100" y1="50" x2="100" y2="170" stroke="#B89068" strokeWidth="0.8"/>
+      <text x="100" y="110" textAnchor="middle" fontFamily="EB Garamond" fontStyle="italic" fontSize="40" fill="#B89068">∞</text>
+      <text x="100" y="190" textAnchor="middle" fontFamily="Cinzel" fontSize="14" fill="#61663C" letterSpacing="3">SIM</text>
     </svg>
   );
 }
@@ -132,12 +138,13 @@ function TimelineItem({ item, index }) {
   );
 }
 
-function Timeline() {
+function Timeline({ ev }) {
+  const t = ev0(ev).timeline;
   return (
     <section className="timeline" data-screen-label="03 Linha do tempo">
       <div className="tl-header">
-        <span className="eyebrow">Linha do tempo</span>
-        <h2 className="section-title">Quatro datas, uma vida.</h2>
+        <span className="eyebrow">{t.eyebrow}</span>
+        <h2 className="section-title">{t.title}</h2>
         <Ornament />
       </div>
       <div className="tl-track">
@@ -151,8 +158,13 @@ function Timeline() {
 }
 
 // ---------- Countdown ----------
-function Countdown() {
-  const target = useMemo(() => new Date("2027-04-11T16:00:00-03:00").getTime(), []);
+function Countdown({ ev }) {
+  const E = ev0(ev);
+  const cd = E.countdown;
+  // E.date.ts é o instante real (a string ISO carrega o offset -03:00),
+  // então a contagem fica certa mesmo para quem abre de outro fuso.
+  const target = E.date.ts;
+  const footLines = useMemo(() => window.countdownFootLines(E), [E]);
   const { days, hours, minutes, seconds } = useCountdown(target);
   const cells = [
     { v: days, l: "dias" },
@@ -163,7 +175,7 @@ function Countdown() {
   return (
     <section className="countdown" data-screen-label="04 Contagem">
       <div className="cd-inner">
-        <span className="eyebrow light">faltam apenas</span>
+        <span className="eyebrow light">{cd.eyebrow}</span>
         <div className="cd-grid">
           {cells.map((c, i) => (
             <div className="cd-cell" key={i}>
@@ -173,11 +185,17 @@ function Countdown() {
           ))}
         </div>
         <p className="cd-foot">
-          <em>11 de Abril de 2027</em> · Beco do Betinho, 1225 · Morada Casagrande · Águas Claras / RS
+          <em>{E.date.long}</em>
+          {footLines.map((line, i) => (
+            <React.Fragment key={i}>
+              <span className="sep"> · </span><br />
+              {line}
+            </React.Fragment>
+          ))}
         </p>
       </div>
     </section>
   );
 }
 
-Object.assign(window, { Hero, Story, Timeline, Countdown, Ornament, Monogram });
+Object.assign(window, { Hero, Story, Timeline, Countdown, Ornament, Monogram, ev0 });

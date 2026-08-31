@@ -1,0 +1,530 @@
+/* ============================================================
+   styles-events.css — carregado DEPOIS de styles.css.
+   Só o que o multi-evento acrescentou: a tela de boot (enquanto
+   /api/config resolve) e a seção #convite (envelope + card).
+   Nada aqui altera uma linha do que já existia — a variante
+   "casamento" continua idêntica.
+
+   Tokens, fontes e regras visuais são os mesmos de styles.css:
+   sem border-radius, transições 200–380ms (as do envelope são
+   mais longas de propósito: papel se move devagar).
+   ============================================================ */
+
+/* ============ boot — evita piscar a variante errada ============ */
+.boot {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+}
+.boot-mark {
+  font-family: var(--script);
+  font-size: 44px;
+  line-height: 1.4;
+  color: var(--ink-faded);
+  opacity: 0;
+  /* fica invisível nos primeiros 300ms: se a config resolver rápido,
+     o convidado não chega a ver nada além do papel */
+  animation: bootIn 600ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms forwards;
+}
+@keyframes bootIn {
+  to { opacity: 1; }
+}
+
+/* ============ Seção Convite ============ */
+/* mesma métrica de .gifts, para o ritmo da página não mudar */
+.invite {
+  background: var(--paper);
+  padding: 88px 24px 110px;
+}
+.invite-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 40px;
+}
+.invite-lead {
+  font-family: var(--display);
+  font-size: clamp(15px, 1.5vw, 18px);
+  line-height: 1.75;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+  margin: 0;
+}
+
+/* ============ Envelope ============ */
+.envelope {
+  /* toda a geometria sai daqui: o card manda, o envelope acompanha */
+  --card-w: clamp(232px, 66vw, 380px);
+  --card-h: calc(var(--card-w) * 1.41);
+  --env-w: calc(var(--card-w) * 1.08);
+  --env-h: calc(var(--card-h) * 1.06);
+  --env-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.env-stage {
+  position: relative;
+  width: var(--env-w);
+  height: var(--env-h);
+  /* só `perspective` aqui: a aba (que é preserve-3d) gira com profundidade,
+     mas as camadas continuam empilhando por z-index normal — em contexto
+     preserve-3d o navegador ordenaria por posição 3D e o card poderia
+     aparecer por cima do bolso */
+  perspective: 1500px;
+  perspective-origin: 50% 0%;
+  transition: height 700ms var(--env-ease) 0ms;
+}
+
+/* --- corpo do envelope (papel) --- */
+.env-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--env-h);
+  z-index: 1;
+  background: var(--paper);
+  border: 1px solid var(--line-mid);
+}
+
+/* --- abas laterais + aba de baixo ("bolso") --- */
+.env-pocket {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: var(--env-h);
+  z-index: 3;
+  overflow: visible;
+  /* a frente precisa ser OPACA: os três polígonos deixam um losango vazado
+     no meio, e o card (z-index 2) apareceria por ali com o envelope fechado */
+  background: var(--paper);
+  border: 1px solid var(--line-mid);
+}
+.env-fold {
+  fill: var(--soft);
+  fill-opacity: 0.92;
+  stroke: var(--olive);
+  stroke-width: 1;
+  stroke-opacity: 0.32;
+  vector-effect: non-scaling-stroke;
+}
+.env-fold-bottom {
+  fill-opacity: 1;
+}
+
+/* --- aba de cima: a que gira em 3D --- */
+.env-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* 62/162 do envelope — mesma proporção do polígono do SVG */
+  height: calc(var(--env-h) * 0.3827);
+  z-index: 4;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  transform: rotateX(0deg);
+  transition: transform 560ms var(--env-ease) 400ms;
+}
+.env-flap {
+  opacity: 1;
+}
+.envelope.is-open .env-flap {
+  /* para antes da vertical: acima de -90deg a ponta subiria acima da dobra
+     e exigiria folga reservada em cima do envelope */
+  transform: rotateX(-78deg);
+  transition: transform 560ms var(--env-ease) 0ms;
+}
+.env-flap > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- lacre em oliva com o monograma --- */
+.env-seal {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: calc(var(--env-w) * 0.2);
+  height: calc(var(--env-w) * 0.2);
+  transform: translate(-50%, 50%) scale(1);
+  display: grid;
+  place-items: center;
+  opacity: 1;
+  transition:
+    opacity 300ms var(--env-ease) 420ms,
+    transform 380ms var(--env-ease) 420ms;
+}
+.env-seal > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.env-seal circle {
+  fill: var(--bronze);
+}
+.env-seal-mark {
+  position: relative;
+  font-family: var(--script);
+  font-size: calc(var(--env-w) * 0.048);
+  line-height: 1;
+  color: var(--paper);
+  transform: translateY(-0.04em);
+  white-space: nowrap;
+}
+/* o lacre "se rompe" logo no início da abertura */
+.envelope.is-open .env-seal {
+  opacity: 0;
+  transform: translate(-50%, 50%) scale(0.86);
+  transition:
+    opacity 200ms var(--env-ease) 0ms,
+    transform 320ms var(--env-ease) 0ms;
+}
+
+.env-toggle {
+  position: relative;
+  z-index: 5;
+}
+
+
+/* ============ Convite em tela cheia ============ */
+/* O convite impresso é retrato e cheio de tipografia miúda: dentro da
+   seção ele ficava pequeno demais para ler no celular. Aqui ele vem à
+   frente da página e ocupa a tela toda, limitado só pelo retrato 1:1.41. */
+.inv-overlay {
+  /* no celular quem limita é a largura; em telas baixas, a altura */
+  --card-w: min(94vw, calc(80vh / 1.41));
+  --card-h: calc(var(--card-w) * 1.41);
+  --env-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(35, 31, 32, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+  animation: fadeIn 240ms ease;
+}
+
+.inv-overlay-inner {
+  position: relative;
+  margin: auto;
+  animation: inviteIn 560ms var(--env-ease);
+}
+@keyframes inviteIn {
+  from { transform: translateY(40px) scale(0.94); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.inv-overlay .inv-card {
+  box-shadow: 0 40px 90px -30px rgba(20, 18, 18, 0.6);
+}
+
+/* fica acima do card, sobre o fundo escurecido — nunca por cima do papel */
+.inv-overlay-close {
+  position: absolute;
+  top: -46px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-family: var(--body);
+  font-size: 30px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 200ms var(--env-ease);
+}
+.inv-overlay-close:hover,
+.inv-overlay-close:focus-visible {
+  color: var(--paper);
+}
+
+@media (max-width: 640px) {
+  .inv-overlay { padding: 16px; }
+  .inv-overlay-close { top: -42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inv-overlay,
+  .inv-overlay-inner { animation-duration: 1ms; }
+}
+
+
+/* ============ Confirmação de presença ============ */
+/* Seção curta e centrada: só o convite para responder. Fica logo abaixo
+   do #convite, então usa um respiro menor que as seções longas. */
+.rsvp {
+  background: var(--paper);
+  background-image: var(--paper-texture);
+  background-repeat: repeat;
+  background-size: var(--paper-texture-size);
+  padding: 40px 24px 120px;
+  text-align: center;
+}
+.rsvp-inner {
+  max-width: 620px;
+  margin: 0 auto;
+}
+.rsvp-lead {
+  font-family: var(--display);
+  font-size: clamp(15px, 1.5vw, 18px);
+  line-height: 1.75;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+  margin: 0;
+}
+.rsvp-cta {
+  margin-top: 32px;
+}
+
+/* --- escolha vai / não vai --- */
+.rsvp-choice {
+  display: block;
+  margin-bottom: 16px;
+}
+.rsvp-choice-lbl {
+  display: block;
+  font-family: var(--body);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 8px;
+}
+.rsvp-choice-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.rsvp-opt {
+  padding: 13px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font-family: var(--body);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  transition: all 200ms var(--env-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
+}
+.rsvp-opt:hover { color: var(--ink); border-color: var(--ink); }
+.rsvp-opt.is-on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* o campo de quantidade não precisa da largura toda */
+.rsvp-guests input {
+  max-width: 120px;
+}
+
+/* ação de confirmar logo abaixo do convite aberto, sobre o fundo escurecido */
+.inv-overlay-cta {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+.inv-overlay-cta .btn-ghost {
+  color: var(--paper);
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(248, 247, 244, 0.06);
+}
+.inv-overlay-cta .btn-ghost:hover {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .rsvp { padding: 24px 24px 90px; }
+  .rsvp-cta { margin-top: 26px; width: 100%; }
+  .rsvp-choice-btns { grid-template-columns: 1fr; }
+  .inv-overlay-cta .btn-ghost { width: 100%; }
+}
+
+/* ============ Card do convite ============ */
+.inv-card {
+  position: relative;
+  width: var(--card-w);
+  height: var(--card-h); /* retrato ~1:1.41 */
+  overflow: hidden;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  padding: 2.2em 2.1em 1.7em;
+  /* unidade base do convite: todo o interior é em `em`, então o card
+     inteiro (tipo, faixa, espaços) escala junto com --card-w */
+  font-size: calc(var(--card-w) / 24);
+  box-shadow: none;
+  transition: box-shadow 420ms var(--env-ease) 0ms;
+}
+
+/* faixa vertical no canto superior direito, com a data empilhada */
+.inv-datestrip {
+  position: absolute;
+  top: 0;
+  right: 1.1em;
+  width: 3.5em;
+  padding: 1.5em 0 2.2em;
+  background: var(--soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--display);
+  font-weight: 400;
+  color: var(--ink);
+}
+.inv-datestrip span {
+  font-size: 1.95em;
+  line-height: 1.06;
+  letter-spacing: 0.02em;
+}
+
+/* a peça tipográfica dominante: duas linhas em script, a segunda
+   deslocada à esquerda e subindo por baixo da primeira */
+.inv-headline {
+  margin: 4.9em 0 0;
+  /* h3 traz 1.17em do user-agent; zerar aqui deixa os `em` dos spans
+     previsíveis, medidos direto na base do card */
+  font-size: 1em;
+  font-family: var(--script);
+  font-weight: 400;
+  line-height: 0.9;
+  color: var(--ink);
+  position: relative;
+  z-index: 1;
+}
+.inv-headline span {
+  display: block;
+  white-space: nowrap;
+}
+.inv-headline-1 {
+  font-size: 5.2em;
+  margin-left: 0.16em;
+}
+.inv-headline-2 {
+  font-size: 5.2em;
+  margin-left: 0.02em;
+  margin-top: -0.3em;
+}
+
+/* corpo do convite: Cinzel pequeno, entrelinha generosa, à esquerda */
+.inv-body {
+  margin: 2.3em 0 0;
+  max-width: 20.4em; /* ≈ 15.5em da base do card */
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 0.76em;
+  line-height: 2.05;
+  letter-spacing: 0.045em;
+  color: var(--ink-soft);
+  text-align: left;
+  text-wrap: pretty;
+}
+
+/* recado alinhado à direita, itálico, letter-spacing alto */
+.inv-note {
+  margin: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35em;
+  font-family: var(--numeral);
+  font-style: italic;
+  font-size: 0.8em;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+/* o endereço é a linha mais longa do bloco: menos espacejamento para caber
+   sem quebrar, e um filete acima separando "quando" de "onde" */
+.inv-note-place {
+  letter-spacing: 0.06em;
+  font-style: normal;
+  font-family: var(--display);
+  font-size: 0.86em;
+  /* é a informação mais acionável do card: não pode ser a linha mais fraca */
+  color: var(--ink-soft);
+  margin: 0.5em 0 0.15em;
+  padding-top: 0.55em;
+  border-top: 1px solid var(--line-soft);
+}
+
+/* monograma discreto no rodapé */
+.inv-mark {
+  margin: 1.5em 0 0;
+  text-align: center;
+  font-family: var(--script);
+  font-size: 1.85em;
+  line-height: 1.2;
+  color: var(--ink-faded);
+}
+
+/* variante "arte final": basta preencher EVENTS.noivado.conviteImage */
+.inv-card-art {
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: block;
+}
+.inv-card-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============ responsive — mobile ============ */
+@media (max-width: 640px) {
+  .invite { padding: 52px 16px 72px; }
+  .invite-header { margin-bottom: 36px; padding: 0 8px; }
+  .invite-lead { font-size: 13px; }
+
+  .envelope {
+    --card-w: clamp(228px, 74vw, 320px);
+    gap: 28px;
+  }
+  .env-toggle {
+    width: 100%;
+    max-width: 280px;
+    padding: 14px 24px;
+    font-size: 11px;
+  }
+  .boot-mark { font-size: 36px; }
+}
+
+/* ============ acessibilidade ============ */
+@media (prefers-reduced-motion: reduce) {
+  .env-stage,
+  .env-flap,
+  .env-back,
+  .env-pocket,
+  .env-seal,
+  .inv-card {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+  .boot-mark { animation: none; opacity: 1; }
+}
