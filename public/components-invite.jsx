@@ -107,16 +107,19 @@ function Envelope({ ev, open, onToggle }) {
             <span className="env-seal-mark">{invite.card.monogram}</span>
           </span>
         </div>
-      </div>
 
-      <button
-        type="button"
-        className="btn-ghost dark env-toggle"
-        onClick={onToggle}
-        aria-expanded={open}
-      >
-        {open ? invite.closeLabel : invite.openLabel}
-      </button>
+        {/* dentro do palco, sobreposto ao envelope logo abaixo do lacre:
+            fora dele a seção ficava ~78px mais alta e em telas baixas o
+            scroll não alcançava o botão */}
+        <button
+          type="button"
+          className="btn-solid env-toggle"
+          onClick={onToggle}
+          aria-expanded={open}
+        >
+          {open ? invite.closeLabel : invite.openLabel}
+        </button>
+      </div>
     </div>
   );
 }

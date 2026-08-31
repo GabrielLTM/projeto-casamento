@@ -64,7 +64,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
 }
 
 .env-stage {
@@ -190,9 +189,17 @@
     transform 320ms var(--env-ease) 0ms;
 }
 
+/* sobreposto ao envelope, centrado logo abaixo do lacre (que fica em ~38%
+   da altura). Sólido de propósito: as dobras diagonais passam por trás e
+   um botão translúcido ficaria riscado por elas. */
 .env-toggle {
-  position: relative;
-  z-index: 5;
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translateX(-50%);
+  z-index: 6;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px -12px rgba(35, 31, 32, 0.45);
 }
 
 
@@ -504,12 +511,11 @@
 
   .envelope {
     --card-w: clamp(228px, 74vw, 320px);
-    gap: 28px;
   }
+  /* sem width:100% agora que ele está sobreposto: esticado de borda a borda
+     do envelope ficaria pesado. Dimensiona pelo conteúdo. */
   .env-toggle {
-    width: 100%;
-    max-width: 280px;
-    padding: 14px 24px;
+    padding: 13px 20px;
     font-size: 11px;
   }
   .boot-mark { font-size: 36px; }
