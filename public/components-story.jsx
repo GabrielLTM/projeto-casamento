@@ -23,7 +23,13 @@ function Ornament({ className = "" }) {
 }
 
 function Monogram() {
-  return <span className="monogram" aria-hidden="true">G &amp; K</span>;
+  // "e" minúsculo em span próprio para poder encolher, igual ao hero:
+  // o "&" da fonte script é um glifo ornamentado e enorme
+  return (
+    <span className="monogram" aria-hidden="true">
+      G <span className="conj">e</span> K
+    </span>
+  );
 }
 
 // ---------- countdown ----------

@@ -326,7 +326,8 @@ window.EVENTS = {
         noteHour: (hour) => `Te esperamos às ${hour}`,
         notePlace: (place) => place,
         noteRsvp: (day) => `confirmar presença até o dia ${day}`,
-        monogram: "G & K",
+        // separado para o "e" poder ser renderizado menor, como no hero
+        monogram: { left: "G", right: "K" },
       },
     },
 
@@ -341,9 +342,15 @@ window.EVENTS = {
 
     pix: {
       eyebrow: "Outra forma de celebrar",
-      title: "Presente em PIX",
+      // no noivado o título evita a palavra "presente": o convidado não pode
+      // confundir esta seção com a lista de presentes do casamento
+      title: "Se quiser nos abençoar nessa jornada pré casamento",
+      // "presentear" aqui reintroduziria justamente a confusão com a lista
+      // de presentes do casamento que o título acima evita
+      qrCaption: "escaneie para abençoar",
+      // sem o "Se quiser" do original, que agora ecoaria o título
       lead:
-        "Se quiser marcar essa data com a gente de alguma forma, você pode contribuir diretamente — cada ajudinha vira parte da casa que estamos começando a construir.",
+        "Você pode contribuir diretamente — cada ajudinha vira parte da casa que estamos começando a construir.",
       hint: "Aponte a câmera do seu banco para o QR Code ao lado, ou copie a chave abaixo.",
     },
 

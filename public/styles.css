@@ -148,6 +148,15 @@ a:hover { color: var(--ink); }
 
 .dot { color: var(--ink-faded); margin: 0 8px; }
 
+/* o "e" precisa encolher: na fonte script o glifo minúsculo ainda sobe
+   demais ao lado das capitulares, e era o "&" que estava gigante antes */
+.monogram .conj,
+.boot-mark .conj,
+.inv-mark .conj,
+.env-seal-mark .conj {
+  font-size: 0.62em;
+}
+
 .monogram {
   font-family: var(--script);
   font-size: 26px;

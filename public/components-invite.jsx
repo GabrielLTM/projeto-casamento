@@ -61,7 +61,9 @@ function InviteCard({ ev }) {
         ))}
       </p>
 
-      <div className="inv-mark" aria-hidden="true">{c.monogram}</div>
+      <div className="inv-mark" aria-hidden="true">
+        {c.monogram.left} <span className="conj">e</span> {c.monogram.right}
+      </div>
     </article>
   );
 }
@@ -104,7 +106,9 @@ function Envelope({ ev, open, onToggle }) {
             <svg viewBox="0 0 100 100" focusable="false">
               <circle cx="50" cy="50" r="49" />
             </svg>
-            <span className="env-seal-mark">{invite.card.monogram}</span>
+            <span className="env-seal-mark">
+              {invite.card.monogram.left} <span className="conj">e</span> {invite.card.monogram.right}
+            </span>
           </span>
         </div>
 

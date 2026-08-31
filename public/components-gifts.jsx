@@ -412,7 +412,7 @@ function Pix({ ev }) {
             <img src={qrUrl(400)} alt="QR Code PIX" />
             <div className="qr-foot">
               <Monogram />
-              <span>escaneie para presentear</span>
+              <span>{copy.qrCaption || "escaneie para presentear"}</span>
             </div>
           </div>
         </div>
