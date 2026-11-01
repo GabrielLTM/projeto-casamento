@@ -316,7 +316,7 @@ function Gifts({ ev }) {
   }, []);
 
   const [band, setBand] = useState2(0);
-  const [sort, setSort] = useState2("padrao");
+  const [sort, setSort] = useState2("menor");
 
   const inBand = PRICE_BANDS[band].test;
   const inCategory = (g) => filter === "Todos" || g.category === filter;
@@ -396,7 +396,6 @@ function Gifts({ ev }) {
             <label className="gifts-sort">
               <span>Ordenar</span>
               <select id="gifts-sort" value={sort} onChange={(e) => setSort(e.target.value)}>
-                <option value="padrao">Sugestão do casal</option>
                 <option value="menor">Menor preço</option>
                 <option value="maior">Maior preço</option>
               </select>
