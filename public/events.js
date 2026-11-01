@@ -259,7 +259,7 @@ window.EVENTS = {
 
     thanks: Object.assign({}, AGRADECIMENTO_TITULO, {
       textBefore:
-        "Cada nome nessa lista, cada mensagem, cada abraço — guardamos tudo. A gente mal vê a hora de receber vocês no ",
+        "Cada presente escolhido, cada mensagem, cada abraço — guardamos tudo. A gente mal vê a hora de receber vocês no ",
     }),
   },
 
@@ -425,7 +425,7 @@ window.EVENTS = {
 
     thanks: Object.assign({}, AGRADECIMENTO_TITULO, {
       textBefore:
-        "Cada nome nessa lista, cada mensagem, cada abraço — guardamos tudo. Cada item vai ter uso, história e a lembrança de quem deu. A gente mal vê a hora de receber vocês no ",
+        "Cada presente escolhido, cada mensagem, cada abraço — guardamos tudo. Cada item vai ter uso, história e a lembrança de quem deu. A gente mal vê a hora de receber vocês no ",
     }),
   },
 };
