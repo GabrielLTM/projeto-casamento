@@ -86,13 +86,19 @@ function GiftPlaceholder({ cat }) {
   );
 }
 
-function GiftCard({ gift, onReserve }) {
+function GiftCard({ gift, onReserve, onPreview }) {
   const reserved = gift.reserved;
   const [imgError, setImgError] = useState2(false);
   const showImage = gift.imageUrl && !imgError;
 
   return (
-    <article className={`gift-card ${reserved ? "reserved" : ""}`}>
+    <article
+      className={`gift-card ${reserved ? "reserved" : ""}`}
+      onClick={() => onPreview(gift)}
+      onKeyDown={(e) => { if (e.key === "Enter" && e.target === e.currentTarget) onPreview(gift); }}
+      tabIndex={0}
+      aria-label={`Ver ${gift.name}`}
+    >
       <div className="gift-image">
         {showImage ? (
           <img
@@ -122,7 +128,7 @@ function GiftCard({ gift, onReserve }) {
           <button
             className="gift-btn"
             disabled={reserved}
-            onClick={() => onReserve(gift)}
+            onClick={(e) => { e.stopPropagation(); onReserve(gift); }}
           >
             {reserved ? "Reservado" : "Presentear"}
           </button>
@@ -144,7 +150,7 @@ function PixPanel({ gift }) {
       <div className="reserve-pix-info">
         <span className="ms-lbl">Chave PIX (e-mail)</span>
         <span className="ms-val mono">{PIX_KEY}</span>
-        <button onClick={copyKey} className="btn-ghost dark" type="button">
+        <button onClick={copyKey} className="preview-link" type="button">
           {copied ? "✓ Copiada" : "Copiar chave"}
         </button>
         <p className="modal-tip">
@@ -255,7 +261,7 @@ function ReservationModal({ gift, onClose, onSuccess }) {
               </div>
               {error && <p className="modal-error">{error}</p>}
               <div className="modal-actions">
-                <button type="button" className="btn-ghost dark" onClick={onClose} disabled={submitting}>Cancelar</button>
+                <button type="button" className="preview-link" onClick={onClose} disabled={submitting}>Cancelar</button>
                 <button type="submit" className="btn-solid" disabled={submitting}>
                   {submitting ? "Reservando..." : "Reservar presente"}
                 </button>
@@ -276,7 +282,7 @@ function ReservationModal({ gift, onClose, onSuccess }) {
 
             <div className="modal-actions" style={{ marginTop: "1.2rem", gap: "0.6rem" }}>
               {gift.storeUrl && (
-                <a className="btn-ghost dark" href={gift.storeUrl} target="_blank" rel="noreferrer">
+                <a className="preview-link" href={gift.storeUrl} target="_blank" rel="noreferrer">
                   Comprar direto na loja
                 </a>
               )}
@@ -293,12 +299,44 @@ function ReservationModal({ gift, onClose, onSuccess }) {
   );
 }
 
+// Foto grande do presente ao clicar no card
+function GiftPreview({ gift, onClose, onReserve }) {
+  useEffect2(() => {
+    if (!gift) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [gift]);
+  if (!gift) return null;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal modal-preview" role="dialog" aria-modal="true" aria-label={gift.name} onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose} aria-label="Fechar">×</button>
+        {gift.imageUrl && <img className="preview-img" src={gift.imageUrl} alt={gift.name} />}
+        <span className="eyebrow">{gift.category}</span>
+        <h3 className="modal-title">{gift.name}</h3>
+        {gift.brand && <p className="preview-brand">{gift.brand}</p>}
+        <p className="preview-price"><span className="cur">R$</span> {gift.price.toLocaleString("pt-BR")}</p>
+        <div className="preview-actions">
+          {gift.storeUrl && (
+            <a className="preview-link" href={gift.storeUrl} target="_blank" rel="noopener noreferrer">Ver na loja</a>
+          )}
+          <button className="gift-btn" disabled={gift.reserved} onClick={() => { onClose(); onReserve(gift); }}>
+            {gift.reserved ? "Reservado" : "Presentear"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Gifts({ ev }) {
   const copy = ev0(ev).gifts;
   const [filter, setFilter] = useState2("Todos");
   const [gifts, setGifts] = useState2([]);
   const [loading, setLoading] = useState2(true);
   const [active, setActive] = useState2(null);
+  const [preview, setPreview] = useState2(null);
 
   const load = () => {
     setLoading(true);
@@ -407,12 +445,14 @@ function Gifts({ ev }) {
           ) : (
             <div className="gifts-grid">
               {list.map((g) => (
-                <GiftCard key={g.id} gift={g} onReserve={setActive} />
+                <GiftCard key={g.id} gift={g} onReserve={setActive} onPreview={setPreview} />
               ))}
             </div>
           )}
         </>
       )}
+
+      <GiftPreview gift={preview} onClose={() => setPreview(null)} onReserve={setActive} />
 
       <ReservationModal
         gift={active}

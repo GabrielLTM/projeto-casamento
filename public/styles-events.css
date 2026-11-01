@@ -698,3 +698,39 @@
 @media (max-width: 640px) {
   .gifts-tools { margin: -20px 16px 32px; }
 }
+
+/* Card de presente abre a foto grande (GiftPreview) */
+.gift-card { cursor: zoom-in; }
+.gift-card:focus-visible { outline: 2px solid var(--bronze); outline-offset: 3px; }
+.gift-card .gift-btn { cursor: pointer; }
+.modal-preview { max-width: 640px; }
+.preview-img {
+  display: block;
+  width: 100%;
+  max-height: 50vh;
+  object-fit: contain;
+  background: var(--white);
+  border: 1px solid var(--line-soft);
+  margin: 8px 0 24px;
+}
+.preview-brand { margin: 6px 0 0; font-family: var(--body); font-style: italic; color: var(--ink-faded); }
+.preview-price { margin: 14px 0 0; font-family: var(--numeral); font-size: 30px; color: var(--ink); }
+.preview-price .cur { font-size: 13px; letter-spacing: .1em; color: var(--ink-faded); }
+.preview-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+.preview-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  border: 1px solid var(--line);
+  font-family: var(--body);
+  font-size: 12px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+.preview-link:hover { background: var(--soft); }
+@media (max-width: 640px) {
+  .modal.modal-preview { padding: 40px 18px 26px; }
+  .preview-img { max-height: 42vh; }
+}
