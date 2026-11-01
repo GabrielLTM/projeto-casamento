@@ -165,7 +165,7 @@ function PixPanel({ gift }) {
   );
 }
 
-function ReservationModal({ gift, onClose, onSuccess }) {
+function ReservationModal({ gift, onClose, onSuccess, inPerson }) {
   const [name, setName] = useState2("");
   const [message, setMessage] = useState2("");
   const [stage, setStage] = useState2("form"); // form | options
@@ -190,7 +190,7 @@ function ReservationModal({ gift, onClose, onSuccess }) {
           giftId: gift.id,
           guestName: name.trim(),
           message: message.trim() || undefined,
-          paymentChoice: "pix",
+          paymentChoice: inPerson ? "store" : "pix",
         }),
       });
       if (res.status === 409) {
@@ -273,17 +273,36 @@ function ReservationModal({ gift, onClose, onSuccess }) {
             <span className="eyebrow">Obrigado, {name.split(" ")[0]}</span>
             <h3 className="modal-title">Presente reservado.</h3>
             <Ornament />
-            <p className="modal-text">
-              Agora é só escolher como prefere presentear: via PIX (mais simples)
-              {gift.storeUrl ? " ou indo até a loja" : ""}.
-            </p>
-
-            <PixPanel gift={gift} />
+            {inPerson ? (
+              // chá de panela: o presente é entregue no dia, então sem PIX aqui
+              <>
+                <p className="modal-text">
+                  Sabemos que o PIX facilita, mas no chá de panela a graça é abrir
+                  os presentes juntos. Por isso, adoraríamos receber o seu no dia.
+                </p>
+                <div className="reserve-steps">
+                  <span className="ms-lbl">Como presentear</span>
+                  <ol>
+                    <li>Compre pelo link da loja{gift.storeUrl ? " (botão abaixo)" : ""}, <em>ou</em></li>
+                    <li>Compre em qualquer loja de sua preferência, usando este item como referência.</li>
+                  </ol>
+                  <p>Depois é só levar o presente no dia do chá.</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="modal-text">
+                  Agora é só escolher como prefere presentear: via PIX (mais simples)
+                  {gift.storeUrl ? " ou indo até a loja" : ""}.
+                </p>
+                <PixPanel gift={gift} />
+              </>
+            )}
 
             <div className="modal-actions" style={{ marginTop: "1.2rem", gap: "0.6rem" }}>
               {gift.storeUrl && (
                 <a className="preview-link" href={gift.storeUrl} target="_blank" rel="noreferrer">
-                  Comprar direto na loja
+                  {inPerson ? "Comprar na loja" : "Comprar direto na loja"}
                 </a>
               )}
               <button className="btn-solid" onClick={onClose}>Concluído</button>
@@ -458,6 +477,7 @@ function Gifts({ ev }) {
         gift={active}
         onClose={() => setActive(null)}
         onSuccess={load}
+        inPerson={!!copy.inPerson}
       />
     </section>
   );

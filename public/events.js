@@ -411,6 +411,8 @@ window.EVENTS = {
     gifts: {
       eyebrow: "Montando a casa",
       title: "Lista do chá de panela",
+      // após reservar: orienta a levar o presente no dia, em vez de mostrar o PIX
+      inPerson: true,
       lead:
         "O chá de panela é a parte prática do sonho: a panela, a toalha, a colher que sempre falta. Escolhemos cada item pensando no dia a dia da nossa casa — e adoraríamos que você fizesse parte disso.",
     },
