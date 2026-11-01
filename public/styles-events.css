@@ -650,3 +650,51 @@
   color: rgba(255, 255, 255, 0.78);
 }
 .hero-cd-foot span { font-family: var(--numeral); }
+
+/* Lista de presentes: faixa de preço + ordenação, abaixo das categorias */
+.gifts-tools {
+  max-width: 1100px;
+  margin: -44px auto 48px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 24px;
+}
+.price-bands { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.price-band {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--line-soft);
+  font-family: var(--body);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+.price-band:hover { color: var(--ink); background: var(--soft); }
+.price-band.active { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.gifts-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--body);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.gifts-sort select {
+  padding: 8px 12px;
+  border: 1px solid var(--line-soft);
+  background: var(--white);
+  font-family: var(--body);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--ink);
+}
+@media (max-width: 640px) {
+  .gifts-tools { margin: -20px 16px 32px; }
+}

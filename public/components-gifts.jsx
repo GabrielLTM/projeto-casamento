@@ -4,6 +4,14 @@ const { useState: useState2, useEffect: useEffect2, useMemo: useMemo2 } = React;
 const PIX_KEY = "gabriellessa251@gmail.com";
 const PIX_BRCODE = "00020126470014BR.GOV.BCB.PIX0125gabriellessa251@gmail.com5204000053039865802BR5925Gabriel Lessa Tramasol Ma6009SAO PAULO62140510l8VVMgFvBE63044555";
 const CATEGORIES = ["Todos", "Cozinha", "Sala de estar", "Banheiro", "Eletrodomésticos", "Decoração"];
+// faixas de preço do filtro da lista (limite superior incluído na faixa)
+const PRICE_BANDS = [
+  { label: "Todos os preços", test: () => true },
+  { label: "Até R$ 50", test: (p) => p <= 50 },
+  { label: "R$ 50 a 100", test: (p) => p > 50 && p <= 100 },
+  { label: "R$ 100 a 200", test: (p) => p > 100 && p <= 200 },
+  { label: "Acima de R$ 200", test: (p) => p > 200 },
+];
 
 // Paleta do PDF de identidade
 const C = { deep: "#B89068", light: "#E1DBC9", soft: "#EFEDE6", paper: "#F8F7F4" };
@@ -307,18 +315,33 @@ function Gifts({ ev }) {
     load();
   }, []);
 
-  const list = useMemo2(
-    () => (filter === "Todos" ? gifts : gifts.filter((g) => g.category === filter)),
-    [filter, gifts]
-  );
+  const [band, setBand] = useState2(0);
+  const [sort, setSort] = useState2("padrao");
 
+  const inBand = PRICE_BANDS[band].test;
+  const inCategory = (g) => filter === "Todos" || g.category === filter;
+
+  const list = useMemo2(() => {
+    const out = gifts.filter((g) => inCategory(g) && inBand(g.price));
+    if (sort === "menor") out.sort((a, b) => a.price - b.price);
+    if (sort === "maior") out.sort((a, b) => b.price - a.price);
+    return out;
+  }, [filter, band, sort, gifts]);
+
+  // contagens cruzadas: categoria dentro da faixa escolhida e vice-versa
   const counts = useMemo2(() => {
-    const c = { Todos: gifts.length };
-    gifts.forEach((g) => {
+    const priced = gifts.filter((g) => inBand(g.price));
+    const c = { Todos: priced.length };
+    priced.forEach((g) => {
       c[g.category] = (c[g.category] || 0) + 1;
     });
     return c;
-  }, [gifts]);
+  }, [band, gifts]);
+
+  const bandCounts = useMemo2(
+    () => PRICE_BANDS.map((b) => gifts.filter((g) => inCategory(g) && b.test(g.price)).length),
+    [filter, gifts]
+  );
 
   const totalReserved = gifts.filter((g) => g.reserved).length;
 
@@ -357,11 +380,38 @@ function Gifts({ ev }) {
             ))}
           </div>
 
-          <div className="gifts-grid">
-            {list.map((g) => (
-              <GiftCard key={g.id} gift={g} onReserve={setActive} />
-            ))}
+          <div className="gifts-tools">
+            <div className="price-bands" role="group" aria-label="Faixa de preço">
+              {PRICE_BANDS.map((b, i) => (
+                <button
+                  key={b.label}
+                  className={`price-band ${band === i ? "active" : ""}`}
+                  aria-pressed={band === i}
+                  onClick={() => setBand(i)}
+                >
+                  {b.label} <span className="filter-count">{bandCounts[i]}</span>
+                </button>
+              ))}
+            </div>
+            <label className="gifts-sort">
+              <span>Ordenar</span>
+              <select id="gifts-sort" value={sort} onChange={(e) => setSort(e.target.value)}>
+                <option value="padrao">Sugestão do casal</option>
+                <option value="menor">Menor preço</option>
+                <option value="maior">Maior preço</option>
+              </select>
+            </label>
           </div>
+
+          {list.length === 0 ? (
+            <p className="gifts-empty">Nenhum presente nessa faixa de preço. Experimente outra faixa.</p>
+          ) : (
+            <div className="gifts-grid">
+              {list.map((g) => (
+                <GiftCard key={g.id} gift={g} onReserve={setActive} />
+              ))}
+            </div>
+          )}
         </>
       )}
 
