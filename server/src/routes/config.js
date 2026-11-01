@@ -37,7 +37,7 @@ const EVENT_DEFAULTS = {
   },
   cha: {
     // data confirmada pelo casal; hora ainda a definir (15h é provisória)
-    dateIso: "2026-11-28T15:00:00-03:00",
+    dateIso: "2026-11-29T15:00:00-03:00",
     placeShort: "Águas Claras / RS",
     placeFull: "Beco do Betinho, 1225 · Morada Casagrande · Águas Claras / RS",
     rsvpUntil: null,
