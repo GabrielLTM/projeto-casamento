@@ -3,7 +3,7 @@ const { useState: useState2, useEffect: useEffect2, useMemo: useMemo2 } = React;
 
 const PIX_KEY = "gabriellessa251@gmail.com";
 const PIX_BRCODE = "00020126470014BR.GOV.BCB.PIX0125gabriellessa251@gmail.com5204000053039865802BR5925Gabriel Lessa Tramasol Ma6009SAO PAULO62140510l8VVMgFvBE63044555";
-const CATEGORIES = ["Todos", "Cozinha", "Sala de estar", "Banheiro", "Eletrodomésticos", "Decoração"];
+const CATEGORIES = ["Todos", "Cozinha", "Sala de estar", "Banheiro", "Quarto", "Lavanderia", "Eletrodomésticos", "Decoração"];
 // faixas de preço do filtro da lista (limite superior incluído na faixa)
 const PRICE_BANDS = [
   { label: "Todos os preços", test: () => true },
