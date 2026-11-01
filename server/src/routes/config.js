@@ -36,13 +36,12 @@ const EVENT_DEFAULTS = {
     datePendingByDefault: false,
   },
   cha: {
-    // PLACEHOLDER — o casal ainda não definiu a data do chá de panela.
-    // Enquanto não houver documento salvo no banco, o admin mostra aviso.
-    dateIso: "2027-02-20T15:00:00-03:00",
+    // data confirmada pelo casal; hora ainda a definir (15h é provisória)
+    dateIso: "2026-11-28T15:00:00-03:00",
     placeShort: "Águas Claras / RS",
     placeFull: "Beco do Betinho, 1225 · Morada Casagrande · Águas Claras / RS",
     rsvpUntil: null,
-    datePendingByDefault: true,
+    datePendingByDefault: false,
   },
 };
 

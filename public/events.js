@@ -43,12 +43,12 @@ window.EVENT_DEFAULTS = {
     source: "default",
   },
   cha: {
-    // PLACEHOLDER — data do chá ainda não definida pelo casal.
-    dateIso: "2027-02-20T15:00:00-03:00",
+    // data confirmada pelo casal; hora ainda a definir (15h é provisória)
+    dateIso: "2026-11-28T15:00:00-03:00",
     placeShort: "Águas Claras / RS",
     placeFull: "Beco do Betinho, 1225 · Morada Casagrande · Águas Claras / RS",
     rsvpUntil: null,
-    datePending: true,
+    datePending: false,
     source: "default",
   },
 };
@@ -207,6 +207,9 @@ window.EVENTS = {
     adminHint: "Site completo: história, contagem, lista de presentes e PIX.",
 
     // Quais seções entram no <main>, na ordem em que o App renderiza.
+    // tela cheia ao abrir o site; some no "entrar no site"
+    saveTheDate: { kicker: "o grande dia", art: "arvore" },
+
     sections: {
       story: true,
       timeline: true,
@@ -369,10 +372,12 @@ window.EVENTS = {
     adminLabel: "Chá de Panela",
     adminHint: "Mesma estrutura do casamento (lista + PIX), com os textos do chá.",
 
+    saveTheDate: { kicker: "começando o nosso lar", art: "bule", label: "Chá de panela" },
+
     sections: {
       story: true,
       timeline: true,
-      countdown: true,
+      countdown: false,   // a contagem já está no hero, logo abaixo do Save the Date
       gifts: true,
       invite: false,
       rsvp: false,
@@ -383,8 +388,11 @@ window.EVENTS = {
     documentTitle: () => "Gabriel & Kamilly · Chá de Panela",
 
     hero: {
-      sub:
-        "Antes da mudança, um chá. Vem com a gente montar, item por item, a casa onde a nossa história vai continuar.",
+      // logo depois do Save the Date: frase + contagem sobre a foto desfocada,
+      // no lugar de data e nomes (que o Save the Date já mostra)
+      title: "Criados para\num dia\ncomo este",   // \n = quebra de linha
+      countdown: true,
+      blur: true,
       ghostCta: { label: "Nossa história", href: "#historia" },
       solidCta: { label: "Lista de presentes", href: "#presentes" },
     },

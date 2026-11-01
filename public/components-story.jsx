@@ -48,42 +48,83 @@ function useCountdown(target) {
 }
 
 // ---------- Hero ----------
-function Hero({ ev }) {
+// Contagem compacta dentro do hero (hero.countdown). Como a seção Countdown,
+// aponta sempre para o casamento.
+function HeroCountdown({ wedding }) {
+  const { days, hours, minutes, seconds } = useCountdown(wedding.date.ts);
+  const cells = [
+    { v: days, l: "dias" },
+    { v: hours, l: "horas" },
+    { v: minutes, l: "min" },
+    { v: seconds, l: "seg" },
+  ];
+  return (
+    <div className="hero-cd">
+      <div className="cd-grid">
+        {cells.map((c, i) => (
+          <div className="cd-cell" key={i}>
+            <span className="cd-num">{String(c.v).padStart(2, "0")}</span>
+            <span className="cd-lbl">{c.l}</span>
+          </div>
+        ))}
+      </div>
+      <p className="hero-cd-foot">até o nosso casamento · <span>{wedding.date.tag}</span></p>
+    </div>
+  );
+}
+
+function Hero({ ev, wedding }) {
   const E = ev0(ev);
   const h = E.hero;
   return (
-    <section className="hero" data-screen-label="01 Hero">
+    <section className={`hero ${h.blur ? "hero-blur" : ""}`} id="inicio" data-screen-label="01 Hero">
       <div className="hero-image">
         <img src="assets/hero.jpg" alt="Gabriel e Kamilly" />
         <div className="hero-veil" />
       </div>
       <div className="hero-inner">
-        <div className="hero-tag">
-          <span className="hero-date">{E.date.tag}</span>
-          <span className="dot">·</span>
-          <span>{E.place.short}</span>
-        </div>
-        <h1 className="hero-title">
-          <span className="script-names">
-            <span>Gabriel</span>
-            <span className="conj">e</span>
-            <span>Kamilly</span>
-          </span>
-        </h1>
-        <Ornament className="light" />
-        <p className="hero-sub">
-          {h.sub}
-          {h.subCite && <cite className="hero-cite">{h.subCite}</cite>}
-        </p>
+        {/* hero.title troca data + nomes por uma frase (o Save the Date acima já mostra os dois) */}
+        {h.title ? (
+          <h1 className="hero-title hero-phrase">
+            {h.title.split("\n").map((line, i) => <span key={i}>{line}</span>)}
+          </h1>
+        ) : (
+          <>
+            <div className="hero-tag">
+              <span className="hero-date">{E.date.tag}</span>
+              <span className="dot">·</span>
+              <span>{E.place.short}</span>
+            </div>
+            <h1 className="hero-title">
+              <span className="script-names">
+                <span>Gabriel</span>
+                <span className="conj">e</span>
+                <span>Kamilly</span>
+              </span>
+            </h1>
+          </>
+        )}
+        {!h.title && <Ornament className="light" />}
+        {h.countdown ? (
+          <HeroCountdown wedding={wedding || E} />
+        ) : (
+          <p className="hero-sub">
+            {h.sub}
+            {h.subCite && <cite className="hero-cite">{h.subCite}</cite>}
+          </p>
+        )}
         <div className="hero-cta">
           <a href={h.ghostCta.href} className="btn-ghost">{h.ghostCta.label}</a>
           <a href={h.solidCta.href} className="btn-solid">{h.solidCta.label}</a>
         </div>
       </div>
-      <div className="hero-scroll">
-        <span>role para começar</span>
-        <svg viewBox="0 0 12 24" width="12" height="24"><path d="M6 0v22M2 18l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="0.8"/></svg>
-      </div>
+      {/* com Save the Date acima, o hero já não é o começo da página */}
+      {!E.saveTheDate && (
+        <div className="hero-scroll">
+          <span>role para começar</span>
+          <svg viewBox="0 0 12 24" width="12" height="24"><path d="M6 0v22M2 18l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="0.8"/></svg>
+        </div>
+      )}
     </section>
   );
 }

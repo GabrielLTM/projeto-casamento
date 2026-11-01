@@ -15,7 +15,7 @@ const PUBLIC_DIR = path.resolve(__dirname, "../../public");
 
 app.use(
   helmet({
-    contentSecurityPolicy: false, // CDN React/Babel + qrserver inline
+    contentSecurityPolicy: false, // scripts de CDN (React/Babel/qrcode) + Babel inline
     crossOriginEmbedderPolicy: false,
   })
 );

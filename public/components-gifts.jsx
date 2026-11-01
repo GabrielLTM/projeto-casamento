@@ -8,8 +8,18 @@ const CATEGORIES = ["Todos", "Cozinha", "Sala de estar", "Banheiro", "Eletrodom�
 // Paleta do PDF de identidade
 const C = { deep: "#B89068", light: "#E1DBC9", soft: "#EFEDE6", paper: "#F8F7F4" };
 
-const qrUrl = (size) =>
-  `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=10&color=231F20&bgcolor=F8F7F4&data=${encodeURIComponent(PIX_BRCODE)}`;
+// QR do PIX (chave = e-mail) gerado no próprio navegador com qrcode-generator:
+// não depende de serviço externo e funciona offline/em prévias.
+const PIX_QR_SRC = (() => {
+  const qr = qrcode(0, "M");
+  qr.addData(PIX_BRCODE);
+  qr.make();
+  const svg = qr
+    .createSvgTag({ cellSize: 8, margin: 2, scalable: true })
+    .replace('fill="white"', 'fill="#F8F7F4"')
+    .replace('fill="black"', 'fill="#231F20"');
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+})();
 
 function GiftPlaceholder({ cat }) {
   const map = {
@@ -135,7 +145,7 @@ function PixPanel({ gift }) {
         </p>
       </div>
       <div className="reserve-pix-qr">
-        <img src={qrUrl(240)} alt="QR Code PIX" />
+        <img src={PIX_QR_SRC} alt="QR Code PIX" />
       </div>
     </div>
   );
@@ -409,7 +419,7 @@ function Pix({ ev }) {
             <div className="qr-corners">
               <span /><span /><span /><span />
             </div>
-            <img src={qrUrl(400)} alt="QR Code PIX" />
+            <img src={PIX_QR_SRC} alt="QR Code PIX" />
             <div className="qr-foot">
               <Monogram />
               <span>{copy.qrCaption || "escaneie para presentear"}</span>
