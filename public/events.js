@@ -375,8 +375,9 @@ window.EVENTS = {
     saveTheDate: { kicker: "começando o nosso lar", art: "bule", label: "Chá de panela" },
 
     sections: {
-      story: true,
-      timeline: true,
+      // site mais direto para o chá: sem história e linha do tempo
+      story: false,
+      timeline: false,
       countdown: false,   // a contagem já está no hero, logo abaixo do Save the Date
       gifts: true,
       invite: false,
@@ -393,7 +394,6 @@ window.EVENTS = {
       title: "Criados para\num dia\ncomo este",   // \n = quebra de linha
       countdown: true,
       blur: true,
-      ghostCta: { label: "Nossa história", href: "#historia" },
       solidCta: { label: "Lista de presentes", href: "#presentes" },
     },
 

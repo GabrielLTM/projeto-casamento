@@ -114,7 +114,7 @@ function Hero({ ev, wedding }) {
           </p>
         )}
         <div className="hero-cta">
-          <a href={h.ghostCta.href} className="btn-ghost">{h.ghostCta.label}</a>
+          {h.ghostCta && <a href={h.ghostCta.href} className="btn-ghost">{h.ghostCta.label}</a>}
           <a href={h.solidCta.href} className="btn-solid">{h.solidCta.label}</a>
         </div>
       </div>
